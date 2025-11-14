@@ -6,7 +6,8 @@ namespace ShorNet
         {
             if (data.Type == PackageData.PackageType.ChatMessage)
             {
-                Plugin.SendChatLogMessage($"<color=purple>[SHORNET]</color> {data.SenderName}: {data.Message}");
+                string msg = $"<color=purple>[SHORNET]</color> {data.SenderName}: {data.Message}";
+                PushToUIAndGame(msg);
             }
             else if (data.Type == PackageData.PackageType.Information)
             {
@@ -19,43 +20,79 @@ namespace ShorNet
             switch (data.Info)
             {
                 case PackageData.InformationType.PlayerConnected:
-                    Plugin.SendChatLogMessage(
-                        $"<color=purple>[SHORNET]</color> <color=yellow>{data.SenderName} has <color=green>connected</color> to ShorNet.</color>");
+                {
+                    string msg =
+                        $"<color=purple>[SHORNET]</color> <color=yellow>{data.SenderName} has <color=green>connected</color> to ShorNet.</color>";
+                    PushToUIAndGame(msg);
                     break;
+                }
 
                 case PackageData.InformationType.PlayerDisconnected:
-                    Plugin.SendChatLogMessage(
-                        $"<color=purple>[SHORNET]</color> <color=yellow>{data.SenderName} has <color=red>disconnected</color> from ShorNet.</color>");
+                {
+                    string msg =
+                        $"<color=purple>[SHORNET]</color> <color=yellow>{data.SenderName} has <color=red>disconnected</color> from ShorNet.</color>";
+                    PushToUIAndGame(msg);
                     break;
+                }
 
                 case PackageData.InformationType.PlayersOnline:
-                    Plugin.SendChatLogMessage($"<color=purple>[SHORNET]</color> {data.Message}");
+                {
+                    string msg = $"<color=purple>[SHORNET]</color> {data.Message}";
+                    PushToUIAndGame(msg);
                     break;
+                }
 
                 case PackageData.InformationType.VersionMismatch:
-                    Plugin.SendChatLogMessage($"<color=purple>[SHORNET]</color> {data.Message}");
+                {
+                    string msg = $"<color=purple>[SHORNET]</color> {data.Message}";
+                    PushToUIAndGame(msg);
                     break;
+                }
 
                 case PackageData.InformationType.BlacklistedMessage:
-                    Plugin.SendChatLogMessage($"<color=purple>[SHORNET]</color> <color=red>{data.Message}</color>");
+                {
+                    string msg = $"<color=purple>[SHORNET]</color> <color=red>{data.Message}</color>";
+                    PushToUIAndGame(msg);
                     break;
+                }
 
                 case PackageData.InformationType.MessageOfTheDay:
-                    Plugin.SendChatLogMessage($"<color=purple>[SHORNET]</color> <color=yellow>{data.Message}</color>");
+                {
+                    string msg = $"<color=purple>[SHORNET]</color> <color=yellow>{data.Message}</color>";
+                    PushToUIAndGame(msg);
                     break;
+                }
 
                 case PackageData.InformationType.KickPlayer:
-                    UpdateSocialLog.LogAdd($"<color=purple>[SHORNET]</color> <color=red>{data.Message}</color>");
+                {
+                    string msg = $"<color=purple>[SHORNET]</color> <color=red>{data.Message}</color>";
+                    NetUIController.AddMessage(msg);
+                    UpdateSocialLog.LogAdd(msg);
                     break;
+                }
 
                 case PackageData.InformationType.BanPlayer:
-                    UpdateSocialLog.LogAdd($"<color=purple>[SHORNET]</color> <color=green>{data.Message}</color>");
+                {
+                    string msg = $"<color=purple>[SHORNET]</color> <color=green>{data.Message}</color>";
+                    NetUIController.AddMessage(msg);
+                    UpdateSocialLog.LogAdd(msg);
                     break;
+                }
 
                 case PackageData.InformationType.UnbanPlayer:
-                    UpdateSocialLog.LogAdd($"<color=purple>[SHORNET]</color> <color=green>{data.Message}</color>");
+                {
+                    string msg = $"<color=purple>[SHORNET]</color> <color=green>{data.Message}</color>";
+                    NetUIController.AddMessage(msg);
+                    UpdateSocialLog.LogAdd(msg);
                     break;
+                }
             }
+        }
+
+        private static void PushToUIAndGame(string msg)
+        {
+            NetUIController.AddMessage(msg);
+            Plugin.SendChatLogMessage(msg);
         }
     }
 }

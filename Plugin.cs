@@ -7,29 +7,38 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.IO;
+using BepInEx.Logging;
 
 namespace ShorNet
 {
     [BepInPlugin("et508.erenshor.shornet", "ShorNet", "0.0.0")]
+    [BepInProcess("Erenshor.exe")]
     public class Plugin : BaseUnityPlugin
     {
         private static NetworkManager _networkManager;
         private static string steamUsername;
         private bool steamChecked = false;
+        
+        internal static ManualLogSource Log;
 
         public void Awake()
         {
+            Log = Logger;
+            
             ConfigGenerator.GenerateConfig(this);
 
             SceneManager.activeSceneChanged += OnSceneWasInitialized;
 
             // Apply all patches
-            var instance = new Harmony("et508.erenshor.shornet");
-            instance.PatchAll();
-            Logger.LogInfo("All ShorNet patches have been loaded!");
+            var harmony = new Harmony("et508.erenshor.shornet");
+            harmony.PatchAll();
+            
+            ShorNetController.Initialize();
+            
+            Log.LogInfo("All ShorNet patches have been loaded!");
 
             // Print hash
-            Logger.LogInfo($"ShorNet Plugin Hash: {GetModHash()}");
+            Log.LogInfo($"ShorNet Plugin Hash: {GetModHash()}");
         }
 
         public static string GetModHash()
@@ -106,8 +115,10 @@ namespace ShorNet
         {
             if (_networkManager == null) return;
 
-            UpdateSocialLog.LogAdd(message);
+            // Local-only log tab
+            UpdateSocialLog.LocalLogAdd(message);
 
+            // Optionally also print into the game's global chat tab
             if (ConfigGenerator._enablePrintInGlobalChat.Value)
             {
                 UpdateSocialLog.LogAdd(message);
