@@ -15,14 +15,14 @@ namespace ShorNet
             _serverIp = baseUnityPlugin.Config.Bind(
                 "Connection",
                 "ServerIP",
-                "45.131.109.73",
+                "127.0.0.1",
                 "The IP address of the ShorNet server."
             );
 
             _serverPort = baseUnityPlugin.Config.Bind(
                 "Connection",
                 "ServerPort",
-                9055,
+                27015,
                 "The port of the ShorNet server."
             );
 
