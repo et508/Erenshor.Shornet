@@ -106,7 +106,7 @@ namespace ShorNet
         {
             if (_networkManager == null) return;
 
-            UpdateSocialLog.LocalLogAdd(message);
+            UpdateSocialLog.LogAdd(message);
 
             if (ConfigGenerator._enablePrintInGlobalChat.Value)
             {
