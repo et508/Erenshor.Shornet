@@ -2,6 +2,7 @@ using System.IO;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 namespace ShorNet
 {
@@ -57,7 +58,31 @@ namespace ShorNet
             NetUIController.Initialize(_uiRoot);
 
             DontDestroyOnLoad(_uiRoot);
+
+            // 🔹 Start hidden by default; scene logic below will decide when to show it.
+            _uiRoot.SetActive(false);
             
+            SceneManager.activeSceneChanged += OnSceneWasInitialized;
+
+            // 🔹 Apply correct visibility for the current active scene immediately
+            var active = SceneManager.GetActiveScene();
+            OnSceneWasInitialized(active, active);
+        }
+        
+        public void OnSceneWasInitialized(Scene current, Scene next)
+        {
+            if (_uiRoot == null)
+                return;
+
+            // 🔹 Always hide in invalid scenes (Menu, LoadScene, etc.)
+            if (!SceneValidator.IsValidScene(next.name))
+            {
+                _uiRoot.SetActive(false);
+                return;
+            }
+            
+            // 🔹 Valid gameplay scene: show or hide based on config
+            // If EnablePrintInChatWindow is true, we only print to the game's chat, so hide our window.
             if (ConfigGenerator._enablePrintInChatWindow.Value)
             {
                 _uiRoot.SetActive(false);
