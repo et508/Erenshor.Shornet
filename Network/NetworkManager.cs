@@ -43,7 +43,7 @@ namespace ShorNet
             _serverPeer = _netManager.Connect(
                 ConfigGenerator._serverIp.Value,
                 ConfigGenerator._serverPort.Value,
-                "ErenshorGlobalChat");
+                "ShorNetOnlineChat");
 
             int attempts = 0;
             while (_serverPeer.ConnectionState != ConnectionState.Connected && attempts < 5)

@@ -158,9 +158,7 @@ namespace ShorNet
             _panelBGMargin      = _initialContainerSize    - _initialPanelBGSize;
             _messagePanelMargin = _initialPanelBGSize      - _initialMessagePanelSize;
             _messageViewMargin  = _initialMessagePanelSize - _initialMessageViewSize;
-
-            Plugin.Log?.LogInfo($"[ShorNet] Initial sizes: container={_initialContainerSize}, panelBG={_initialPanelBGSize}, messagePanel={_initialMessagePanelSize}, messageView={_initialMessageViewSize}");
-            Plugin.Log?.LogInfo($"[ShorNet] Margins: panelBG={_panelBGMargin}, messagePanel={_messagePanelMargin}, messageView={_messageViewMargin}");
+            
 
             // 🔹 Drag handle: use panelBG itself so clicking the border/background moves the window
             _dragHandle = _panelBG;
@@ -187,7 +185,6 @@ namespace ShorNet
             }
 
             IsInitialized = true;
-            Plugin.Log?.LogInfo("[ShorNet] NetUIController initialized successfully.");
         }
 
         /// <summary>
