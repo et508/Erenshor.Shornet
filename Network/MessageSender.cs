@@ -68,7 +68,7 @@ namespace ShorNet
         {
             if (Plugin.GetNetworkManager().GetPeer() == null)
             {
-                UpdateSocialLog.LogAdd("No connection to the ShorNet server. Couldn't send command.");
+                ChatHandler.PushToUIAndGame("No connection to the ShorNet server. Couldn't send command.");
                 return;
             }
 
