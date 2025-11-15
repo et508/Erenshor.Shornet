@@ -6,7 +6,9 @@ namespace ShorNet
         {
             if (data.Type == PackageData.PackageType.ChatMessage)
             {
-                string msg = $"<color=purple>[SHORNET]</color> {data.SenderName}: {data.Message}";
+                // 🔹 Channel-aware tag for future multichannel support
+                string channelTag = GetChannelTag(data.Channel);
+                string msg = $"<color=purple>[SHORNET]</color> {channelTag}{data.SenderName}: {data.Message}";
                 PushToUIAndGame(msg);
             }
             else if (data.Type == PackageData.PackageType.Information)
@@ -86,6 +88,21 @@ namespace ShorNet
                     UpdateSocialLog.LogAdd(msg);
                     break;
                 }
+            }
+        }
+
+        // 🔹 Channel label helper
+        private static string GetChannelTag(PackageData.ChatChannel channel)
+        {
+            switch (channel)
+            {
+                case PackageData.ChatChannel.Trade:
+                    // Future-proof: this will show once we actually route /trade messages
+                    return "<color=#FFA500>[Trade]</color> ";
+
+                case PackageData.ChatChannel.All:
+                default:
+                    return "<color=#8AAFFF>[All]</color> ";
             }
         }
 

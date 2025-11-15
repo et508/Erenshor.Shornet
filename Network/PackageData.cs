@@ -20,15 +20,26 @@ namespace ShorNet
             BanPlayer,
             UnbanPlayer
         }
+        
+        public enum ChatChannel
+        {
+            All   = 0,
+            Trade = 1,
+        }
 
         public PackageType Type;
         public InformationType Info;
+
         public string SenderName;
         public string Message;
+
         public int Duration;
+
         public string ModVersion;
         public string ModHash;
         public string SteamId;
-        // Signature removed – we’re not doing HMAC-based handshake anymore
+
+        public ChatChannel Channel; 
+        // NOTE: Should default to ChatChannel.All unless explicitly set (handled in MessageSender)
     }
 }

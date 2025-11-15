@@ -10,7 +10,7 @@ namespace ShorNet
     {
         public static void SendPackage(NetPeer peer, PackageData data)
         {
-            var writer = new NetDataWriter();
+            var writer   = new NetDataWriter();
             var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
             writer.Put(JsonConvert.SerializeObject(data, settings));
             peer.Send(writer, DeliveryMethod.ReliableOrdered);
@@ -35,6 +35,7 @@ namespace ShorNet
                 SenderName = Plugin.GetSteamUsername(),
                 Type       = PackageData.PackageType.ChatMessage,
                 Message    = message,
+                Channel    = PackageData.ChatChannel.All, // 🔹 New: all chat is on [All] for now
                 ModVersion = Chainloader.PluginInfos["et508.erenshor.shornet"].Metadata.Version.ToString(),
                 ModHash    = Plugin.GetModHash(),
                 SteamId    = SteamUser.GetSteamID().ToString()
