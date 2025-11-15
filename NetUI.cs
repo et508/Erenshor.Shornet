@@ -58,7 +58,14 @@ namespace ShorNet
 
             DontDestroyOnLoad(_uiRoot);
             
-            _uiRoot.SetActive(true); // Start hidden
+            if (ConfigGenerator._enablePrintInChatWindow.Value)
+            {
+                _uiRoot.SetActive(false);
+            }
+            else
+            {
+                _uiRoot.SetActive(true);
+            }
         }
         
         public void ToggleUI()

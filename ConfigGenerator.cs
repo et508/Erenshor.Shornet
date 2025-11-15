@@ -30,7 +30,7 @@ namespace ShorNet
                 "Preferences",
                 "EnablePrintInChatWindow",
                 false,
-                "Also print all ShorNet messages into the game's chat window."
+                "Send ShorNet messages to the game's chat window."
             );
         }
     }
