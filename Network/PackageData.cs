@@ -29,5 +29,6 @@ namespace ShorNet
         public string ModVersion;
         public string ModHash;
         public string SteamId;
+        // Signature removed – we’re not doing HMAC-based handshake anymore
     }
 }
