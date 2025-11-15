@@ -58,6 +58,18 @@ namespace ShorNet
                 return;
             }
 
+            // 🔹 Restore saved window position if enabled
+            if (ConfigGenerator.WindowPositionEnabled != null &&
+                ConfigGenerator.WindowPositionEnabled.Value)
+            {
+                var restored = new Vector2(
+                    ConfigGenerator.WindowPosX.Value,
+                    ConfigGenerator.WindowPosY.Value
+                );
+                _containerRect.anchoredPosition = restored;
+                Plugin.Log?.LogInfo($"[ShorNet] Restored chat window position to {restored}.");
+            }
+
             // panelBG
             _panelBG = UICommon.Find(_uiRoot, "container/panelBG")?.gameObject;
             if (_panelBG == null)
@@ -158,7 +170,27 @@ namespace ShorNet
             _panelBGMargin      = _initialContainerSize    - _initialPanelBGSize;
             _messagePanelMargin = _initialPanelBGSize      - _initialMessagePanelSize;
             _messageViewMargin  = _initialMessagePanelSize - _initialMessageViewSize;
-            
+
+            // 🔹 Restore saved window size (after margins are cached so layout math stays correct)
+            if (ConfigGenerator.WindowSizeEnabled != null &&
+                ConfigGenerator.WindowSizeEnabled.Value &&
+                (ConfigGenerator.WindowWidth.Value > 0f || ConfigGenerator.WindowHeight.Value > 0f))
+            {
+                var savedSize = new Vector2(
+                    ConfigGenerator.WindowWidth.Value,
+                    ConfigGenerator.WindowHeight.Value
+                );
+
+                // Apply now...
+                _containerRect.sizeDelta = savedSize;
+                RefreshLayout();
+                Plugin.Log?.LogInfo($"[ShorNet] Restored chat window size to {savedSize}.");
+
+                // ...and ensure it gets re-applied after Unity's first layout pass.
+                var restorer = _container.AddComponent<SizeRestorer>();
+                restorer.Target = _containerRect;
+                restorer.SavedSize = savedSize;
+            }
 
             // 🔹 Drag handle: use panelBG itself so clicking the border/background moves the window
             _dragHandle = _panelBG;
@@ -166,6 +198,9 @@ namespace ShorNet
             {
                 var dh = _dragHandle.GetComponent<DragHandler>() ?? _dragHandle.AddComponent<DragHandler>();
                 dh.PanelToMove = _containerRect;
+
+                // Save window position when dragging finishes
+                dh.OnDragFinished = SaveWindowPosition;
             }
             else
             {
@@ -200,6 +235,14 @@ namespace ShorNet
                 return; // only care about the ShorNet container
 
             RefreshLayout();
+
+            // 🔹 Save updated size to config
+            var size = _containerRect.sizeDelta;
+            ConfigGenerator.WindowWidth.Value = size.x;
+            ConfigGenerator.WindowHeight.Value = size.y;
+            ConfigGenerator.WindowSizeEnabled.Value = true;
+
+            Plugin.Log?.LogInfo($"[ShorNet] Saved chat window size: {size}.");
         }
 
         private static void RefreshLayout()
@@ -213,6 +256,18 @@ namespace ShorNet
             _panelBGRect.sizeDelta      = containerSize - _panelBGMargin;
             _messagePanelRect.sizeDelta = _panelBGRect.sizeDelta - _messagePanelMargin;
             _messageViewRect.sizeDelta  = _messagePanelRect.sizeDelta - _messageViewMargin;
+        }
+
+        private static void SaveWindowPosition(Vector2 anchoredPos)
+        {
+            if (_containerRect == null)
+                return;
+
+            ConfigGenerator.WindowPosX.Value = anchoredPos.x;
+            ConfigGenerator.WindowPosY.Value = anchoredPos.y;
+            ConfigGenerator.WindowPositionEnabled.Value = true;
+
+            Plugin.Log?.LogInfo($"[ShorNet] Saved chat window position: {anchoredPos}.");
         }
 
         public static void AddMessage(string message)
@@ -232,6 +287,27 @@ namespace ShorNet
             {
                 Canvas.ForceUpdateCanvases();
                 _scrollRect.verticalNormalizedPosition = 0f;
+            }
+        }
+
+        // 🔹 Helper MonoBehaviour: re-apply saved size after Unity finishes its first layout pass.
+        private sealed class SizeRestorer : MonoBehaviour
+        {
+            public RectTransform Target;
+            public Vector2 SavedSize;
+
+            private bool _applied;
+
+            private void LateUpdate()
+            {
+                if (_applied || Target == null || !IsInitialized)
+                    return;
+
+                Target.sizeDelta = SavedSize;
+                RefreshLayout();
+
+                _applied = true;
+                enabled = false;
             }
         }
     }

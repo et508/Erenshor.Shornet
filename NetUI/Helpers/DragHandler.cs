@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -9,6 +10,9 @@ namespace ShorNet
 
         private bool _dragging;
         private Vector2 _offset;
+
+        // 🔹 Optional callback so others (like NetUIController) can react when dragging ends
+        public Action<Vector2> OnDragFinished;
 
         public void OnPointerDown(PointerEventData eventData)
         {
@@ -41,6 +45,12 @@ namespace ShorNet
         {
             _dragging = false;
             GameData.DraggingUIElement = false;
+
+            // 🔹 Notify listeners that dragging is finished, with final anchored position
+            if (PanelToMove != null)
+            {
+                OnDragFinished?.Invoke(PanelToMove.anchoredPosition);
+            }
         }
     }
 }

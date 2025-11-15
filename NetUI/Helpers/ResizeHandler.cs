@@ -8,8 +8,12 @@ namespace ShorNet
         public RectTransform PanelToResize;
 
         private bool _resizing;
-        private Vector2 _initialSize;
-        private Vector2 _initialMouse;
+        private Vector2 _startSize;
+        private Vector2 _startMouseLocal;
+
+        // Minimum size to avoid collapsing the window
+        public float MinWidth = 200f;
+        public float MinHeight = 100f;
 
         public void OnPointerDown(PointerEventData eventData)
         {
@@ -17,9 +21,15 @@ namespace ShorNet
                 return;
 
             _resizing = true;
-            _initialSize = PanelToResize.sizeDelta;
-            _initialMouse = eventData.position;
             GameData.DraggingUIElement = true;
+
+            // Cache starting size and mouse position relative to the panel
+            _startSize = PanelToResize.sizeDelta;
+
+            Vector2 local;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                PanelToResize, eventData.position, null, out local);
+            _startMouseLocal = local;
         }
 
         public void OnDrag(PointerEventData eventData)
@@ -27,23 +37,38 @@ namespace ShorNet
             if (!_resizing || PanelToResize == null)
                 return;
 
-            var delta = eventData.position - _initialMouse;
+            Vector2 local;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                PanelToResize, eventData.position, null, out local);
 
-            // Grow to the right and down; invert Y to match UI coords
-            var newSize = _initialSize + new Vector2(delta.x, -delta.y);
-            newSize.x = Mathf.Max(300f, newSize.x);
-            newSize.y = Mathf.Max(150f, newSize.y);
+            // Assuming resize handle is bottom-right corner:
+            // Horizontal drag grows width, vertical drag shrinks height (because Y increases upward).
+            Vector2 delta = local - _startMouseLocal;
+            Vector2 newSize = _startSize + new Vector2(delta.x, -delta.y);
+
+            // Clamp to minimums
+            if (newSize.x < MinWidth) newSize.x = MinWidth;
+            if (newSize.y < MinHeight) newSize.y = MinHeight;
 
             PanelToResize.sizeDelta = newSize;
 
-            // Let NetUIController recompute child layout based on new container size
+            // 🔹 Inform the UI controller that the container size changed
             NetUIController.OnPanelResized(PanelToResize);
         }
 
         public void OnPointerUp(PointerEventData eventData)
         {
+            if (!_resizing)
+                return;
+
             _resizing = false;
             GameData.DraggingUIElement = false;
+
+            if (PanelToResize != null)
+            {
+                // 🔹 One last notify so it can persist the final size
+                NetUIController.OnPanelResized(PanelToResize);
+            }
         }
     }
 }
