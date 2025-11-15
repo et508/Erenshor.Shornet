@@ -89,10 +89,21 @@ namespace ShorNet
             }
         }
 
-        private static void PushToUIAndGame(string msg)
+        public static void PushToUIAndGame(string msg)
         {
-            NetUIController.AddMessage(msg);
-            Plugin.SendChatLogMessage(msg);
+            if (ConfigGenerator._enablePrintInChatWindow.Value)
+            {
+                SendChatLogMessage(msg);
+            }
+            else
+            {
+                NetUIController.AddMessage(msg);
+            }
+        }
+        
+        public static void SendChatLogMessage(string message)
+        {
+            UpdateSocialLog.LogAdd(message);
         }
     }
 }

@@ -55,7 +55,7 @@ namespace ShorNet
 
             if (_serverPeer.ConnectionState == ConnectionState.Connected)
             {
-                Plugin.SendChatLogMessage("<color=purple>[SHORNET]</color> <color=green>Successfully connected to the ShorNet server.</color>");
+                ChatHandler.PushToUIAndGame("<color=purple>[SHORNET]</color> <color=green>Successfully connected to the ShorNet server.</color>");
                 _logger.LogMessage("Successfully connected to the ShorNet server.");
             }
             else
@@ -72,7 +72,7 @@ namespace ShorNet
             if (_serverPeer.ConnectionState == ConnectionState.Disconnected)
             {
                 _logger.LogError("Lost connection to the ShorNet server.");
-                Plugin.SendChatLogMessage("<color=purple>[SHORNET]</color> <color=red>Lost connection to the ShorNet server.</color>");
+                ChatHandler.PushToUIAndGame("<color=purple>[SHORNET]</color> <color=red>Lost connection to the ShorNet server.</color>");
                 _serverPeer = null;
             }
         }

@@ -20,13 +20,13 @@ namespace ShorNet
         {
             if (Plugin.GetNetworkManager().GetPeer() == null)
             {
-                Plugin.SendChatLogMessage("No connection to the ShorNet server. Couldn't send message.");
+                ChatHandler.PushToUIAndGame("No connection to the ShorNet server. Couldn't send message.");
                 return;
             }
 
             if (message.Length > 255)
             {
-                Plugin.SendChatLogMessage("Message is too long. Couldn't send message.");
+                ChatHandler.PushToUIAndGame("Message is too long. Couldn't send message.");
                 return;
             }
 
@@ -47,7 +47,7 @@ namespace ShorNet
         {
             if (Plugin.GetNetworkManager().GetPeer() == null)
             {
-                Plugin.SendChatLogMessage("No connection to the ShorNet server. Couldn't send message.");
+                ChatHandler.PushToUIAndGame("No connection to the ShorNet server. Couldn't send message.");
                 return;
             }
 

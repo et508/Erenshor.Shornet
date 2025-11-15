@@ -8,14 +8,14 @@ namespace ShorNet
     {
         public static ConfigEntry<string> _serverIp;
         public static ConfigEntry<int> _serverPort;
-        public static ConfigEntry<bool> _enablePrintInGlobalChat;
+        public static ConfigEntry<bool> _enablePrintInChatWindow;
 
         public static void GenerateConfig(BaseUnityPlugin baseUnityPlugin)
         {
             _serverIp = baseUnityPlugin.Config.Bind(
                 "Connection",
                 "ServerIP",
-                "127.0.0.1", //TODO: Change default to server IP later
+                "127.0.0.1", //TODO: Change to actual server IP
                 "The IP address of the ShorNet server."
             );
 
@@ -26,11 +26,11 @@ namespace ShorNet
                 "The port of the ShorNet server."
             );
 
-            _enablePrintInGlobalChat = baseUnityPlugin.Config.Bind(
+            _enablePrintInChatWindow = baseUnityPlugin.Config.Bind(
                 "Preferences",
-                "EnablePrintInShorNetChat",
+                "EnablePrintInChatWindow",
                 false,
-                "Also print all ShorNet messages into the game's Global Chat tab instead of only the local Social Log."
+                "Also print all ShorNet messages into the game's chat window."
             );
         }
     }

@@ -110,19 +110,5 @@ namespace ShorNet
 
             _networkManager.SendDisconnectedPackage();
         }
-
-        public static void SendChatLogMessage(string message)
-        {
-            if (_networkManager == null) return;
-
-            // Local-only log tab
-            UpdateSocialLog.LocalLogAdd(message);
-
-            // Optionally also print into the game's global chat tab
-            if (ConfigGenerator._enablePrintInGlobalChat.Value)
-            {
-                UpdateSocialLog.LogAdd(message);
-            }
-        }
     }
 }

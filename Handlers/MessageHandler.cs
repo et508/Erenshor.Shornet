@@ -51,7 +51,7 @@ namespace ShorNet
             private static void HandleToggleGlobalChat(TypeText __instance)
             {
                 writeIntoGlobalByDefault = !writeIntoGlobalByDefault;
-                Plugin.SendChatLogMessage("<color=purple>[SHORNET]</color> <color=yellow>Chatting in ShorNet by default is now " + (writeIntoGlobalByDefault ? "enabled" : "disabled") + "</color>");
+                ChatHandler.PushToUIAndGame("<color=purple>[SHORNET]</color> <color=yellow>Chatting in ShorNet by default is now " + (writeIntoGlobalByDefault ? "enabled" : "disabled") + "</color>");
             }
 
             private static void HandleSendGlobalMessage(TypeText __instance)
@@ -82,7 +82,7 @@ namespace ShorNet
                 }
                 catch (FormatException)
                 {
-                    Plugin.SendChatLogMessage("<color=purple>[SHORNET]</color> <color=red>Invalid player ID format. Please use a valid number.</color>");
+                    ChatHandler.PushToUIAndGame("<color=purple>[SHORNET]</color> <color=red>Invalid player ID format. Please use a valid number.</color>");
                 }
             }
 
@@ -95,7 +95,7 @@ namespace ShorNet
                 }
                 catch (FormatException)
                 {
-                    Plugin.SendChatLogMessage("<color=purple>[SHORNET]</color> <color=red>Invalid player ID format. Please use a valid number.</color>");
+                    ChatHandler.PushToUIAndGame("<color=purple>[SHORNET]</color> <color=red>Invalid player ID format. Please use a valid number.</color>");
                 }
             }
 
@@ -108,7 +108,7 @@ namespace ShorNet
                 }
                 catch (FormatException)
                 {
-                    Plugin.SendChatLogMessage("<color=purple>[SHORNET]</color> <color=red>Invalid player ID format. Please use a valid number.</color>");
+                    ChatHandler.PushToUIAndGame("<color=purple>[SHORNET]</color> <color=red>Invalid player ID format. Please use a valid number.</color>");
                 }
             }
 
