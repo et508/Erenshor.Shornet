@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace ShorNet
 {
@@ -37,7 +38,24 @@ namespace ShorNet
             //SNmenuController.Initialize(_uiRoot);
 
             // We want this one visible by default
-            _uiRoot.SetActive(true);
+            _uiRoot.SetActive(false);
+            
+            SceneManager.activeSceneChanged += OnSceneWasInitialized;
+
+            // Apply correct visibility for the current active scene immediately
+            var active = SceneManager.GetActiveScene();
+            OnSceneWasInitialized(active, active);
+        }
+        
+        public void OnSceneWasInitialized(Scene current, Scene next)
+        {
+            if (_uiRoot == null)
+                return;
+            
+            if (SceneValidator.IsValidScene(next.name))
+            {
+                _uiRoot.SetActive(true);
+            }
         }
 
         public void ToggleUI()
