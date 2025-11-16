@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -15,6 +16,10 @@ namespace ShorNet
         public float MinWidth = 200f;
         public float MinHeight = 100f;
 
+        // 🔹 Callbacks so any controller can react to resize & persist size
+        public Action<RectTransform> OnResizing;
+        public Action<RectTransform> OnResizeFinished;
+
         public void OnPointerDown(PointerEventData eventData)
         {
             if (eventData.button != PointerEventData.InputButton.Left || PanelToResize == null)
@@ -23,7 +28,6 @@ namespace ShorNet
             _resizing = true;
             GameData.DraggingUIElement = true;
 
-            // Cache starting size and mouse position relative to the panel
             _startSize = PanelToResize.sizeDelta;
 
             Vector2 local;
@@ -41,19 +45,17 @@ namespace ShorNet
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 PanelToResize, eventData.position, null, out local);
 
-            // Assuming resize handle is bottom-right corner:
-            // Horizontal drag grows width, vertical drag shrinks height (because Y increases upward).
-            Vector2 delta = local - _startMouseLocal;
+            // Assuming bottom-right corner resize handle:
+            Vector2 delta   = local - _startMouseLocal;
             Vector2 newSize = _startSize + new Vector2(delta.x, -delta.y);
 
-            // Clamp to minimums
-            if (newSize.x < MinWidth) newSize.x = MinWidth;
+            if (newSize.x < MinWidth)  newSize.x = MinWidth;
             if (newSize.y < MinHeight) newSize.y = MinHeight;
 
             PanelToResize.sizeDelta = newSize;
 
-            // 🔹 Inform the UI controller that the container size changed
-            SNchatWindowController.OnPanelResized(PanelToResize);
+            // Notify listeners while resizing (e.g., to update children or preview)
+            OnResizing?.Invoke(PanelToResize);
         }
 
         public void OnPointerUp(PointerEventData eventData)
@@ -66,8 +68,8 @@ namespace ShorNet
 
             if (PanelToResize != null)
             {
-                // 🔹 One last notify so it can persist the final size
-                SNchatWindowController.OnPanelResized(PanelToResize);
+                // Final notify – perfect place for saving size via WindowLayoutStore, etc.
+                OnResizeFinished?.Invoke(PanelToResize);
             }
         }
     }

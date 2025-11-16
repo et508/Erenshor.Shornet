@@ -27,6 +27,10 @@ namespace ShorNet
             
             ConfigGenerator.GenerateConfig(this);
 
+            // 🔹 Ensure ShorNet config folders/files + window layout store are ready
+            ShorNetSetup.EnsureInitialized();
+            WindowLayoutStore.Load();
+
             SceneManager.activeSceneChanged += OnSceneWasInitialized;
 
             // Apply all patches

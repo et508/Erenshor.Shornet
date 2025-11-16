@@ -48,7 +48,9 @@
       <Compile Include="Network\PackageData.cs" />
       <Compile Include="Plugin.cs" />
       <Compile Include="ShorNetController.cs" />
+      <Compile Include="ShorNetSetup.cs" />
       <Compile Include="Validation\SceneValidator.cs" />
+      <Compile Include="WindowLayout.cs" />
     </ItemGroup>
     <ItemGroup>
       <Reference Include="0Harmony">

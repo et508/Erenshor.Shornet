@@ -11,12 +11,13 @@ namespace ShorNet
         private bool _dragging;
         private Vector2 _offset;
 
-        // Optional callback so others (like NetUIController) can react when dragging ends
+        // Optional callback so others (like SNchatWindowController) can react when dragging ends
         public Action<Vector2> OnDragFinished;
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            if (eventData.button != PointerEventData.InputButton.Left || PanelToMove == null) return;
+            if (eventData.button != PointerEventData.InputButton.Left || PanelToMove == null) 
+                return;
 
             _dragging = true;
             GameData.DraggingUIElement = true;
@@ -29,10 +30,12 @@ namespace ShorNet
 
         public void OnDrag(PointerEventData eventData)
         {
-            if (!_dragging || PanelToMove == null) return;
+            if (!_dragging || PanelToMove == null) 
+                return;
 
             RectTransform parent = PanelToMove.parent as RectTransform;
-            if (parent == null) return;
+            if (parent == null) 
+                return;
 
             Vector2 pointerPos;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(

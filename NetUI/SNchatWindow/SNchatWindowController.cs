@@ -6,6 +6,8 @@ namespace ShorNet
 {
     public static class SNchatWindowController
     {
+        private const string WindowId = "SNchatWindow";
+
         private static GameObject _uiRoot;
 
         private static GameObject _container;
@@ -58,16 +60,15 @@ namespace ShorNet
                 return;
             }
 
-            // 🔹 Restore saved window position if enabled
-            if (ConfigGenerator.WindowPositionEnabled != null &&
-                ConfigGenerator.WindowPositionEnabled.Value)
+            // Try to load any previously saved layout (position + size) from WindowLayoutStore
+            WindowLayout savedLayout = null;
+            if (WindowLayoutStore.TryGetLayout(WindowId, out var layout))
             {
-                var restored = new Vector2(
-                    ConfigGenerator.WindowPosX.Value,
-                    ConfigGenerator.WindowPosY.Value
-                );
-                _containerRect.anchoredPosition = restored;
-                Plugin.Log?.LogInfo($"[ShorNet] Restored chat window position to {restored}.");
+                savedLayout = layout;
+                // Apply position right away
+                Vector2 pos = new Vector2(layout.PosX, layout.PosY);
+                _containerRect.anchoredPosition = pos;
+                Plugin.Log?.LogInfo($"[ShorNet] Restored chat window position to {pos}.");
             }
 
             // panelBG
@@ -171,24 +172,18 @@ namespace ShorNet
             _messagePanelMargin = _initialPanelBGSize      - _initialMessagePanelSize;
             _messageViewMargin  = _initialMessagePanelSize - _initialMessageViewSize;
 
-            // 🔹 Restore saved window size (after margins are cached so layout math stays correct)
-            if (ConfigGenerator.WindowSizeEnabled != null &&
-                ConfigGenerator.WindowSizeEnabled.Value &&
-                (ConfigGenerator.WindowWidth.Value > 0f || ConfigGenerator.WindowHeight.Value > 0f))
+            // 🔹 Restore saved window SIZE (after margins are cached so layout math stays correct)
+            if (savedLayout != null && (savedLayout.SizeX > 0f || savedLayout.SizeY > 0f))
             {
-                var savedSize = new Vector2(
-                    ConfigGenerator.WindowWidth.Value,
-                    ConfigGenerator.WindowHeight.Value
-                );
+                var savedSize = new Vector2(savedLayout.SizeX, savedLayout.SizeY);
 
-                // Apply now...
                 _containerRect.sizeDelta = savedSize;
                 RefreshLayout();
                 Plugin.Log?.LogInfo($"[ShorNet] Restored chat window size to {savedSize}.");
 
-                // ...and ensure it gets re-applied after Unity's first layout pass.
+                // Ensure size is re-applied after Unity's first layout pass
                 var restorer = _container.AddComponent<SizeRestorer>();
-                restorer.Target = _containerRect;
+                restorer.Target    = _containerRect;
                 restorer.SavedSize = savedSize;
             }
 
@@ -199,7 +194,7 @@ namespace ShorNet
                 var dh = _dragHandle.GetComponent<DragHandler>() ?? _dragHandle.AddComponent<DragHandler>();
                 dh.PanelToMove = _containerRect;
 
-                // Save window position when dragging finishes
+                // Save window position when dragging finishes via WindowLayoutStore
                 dh.OnDragFinished = SaveWindowPosition;
             }
             else
@@ -213,6 +208,10 @@ namespace ShorNet
             {
                 var rh = _resizeHandle.GetComponent<ResizeHandler>() ?? _resizeHandle.AddComponent<ResizeHandler>();
                 rh.PanelToResize = _containerRect;
+
+                // Wire generic callbacks to our layout refresh + size save
+                rh.OnResizing       = OnPanelResized;
+                rh.OnResizeFinished = OnPanelResized;
             }
             else
             {
@@ -224,7 +223,7 @@ namespace ShorNet
 
         /// <summary>
         /// Called by ResizeHandler when the main container changes size.
-        /// Recomputes child sizes so original border/spacing is preserved.
+        /// Recomputes child sizes so original border/spacing is preserved and saves layout size.
         /// </summary>
         public static void OnPanelResized(RectTransform panel)
         {
@@ -236,13 +235,13 @@ namespace ShorNet
 
             RefreshLayout();
 
-            // 🔹 Save updated size to config
             var size = _containerRect.sizeDelta;
-            ConfigGenerator.WindowWidth.Value = size.x;
-            ConfigGenerator.WindowHeight.Value = size.y;
-            ConfigGenerator.WindowSizeEnabled.Value = true;
+            var pos  = _containerRect.anchoredPosition;
 
-            Plugin.Log?.LogInfo($"[ShorNet] Saved chat window size: {size}.");
+            // Save both pos & size through the shared layout store
+            WindowLayoutStore.SetLayout(WindowId, pos, size);
+
+            Plugin.Log?.LogInfo($"[ShorNet] Saved chat window size: {size} (pos {pos}).");
         }
 
         private static void RefreshLayout()
@@ -263,11 +262,12 @@ namespace ShorNet
             if (_containerRect == null)
                 return;
 
-            ConfigGenerator.WindowPosX.Value = anchoredPos.x;
-            ConfigGenerator.WindowPosY.Value = anchoredPos.y;
-            ConfigGenerator.WindowPositionEnabled.Value = true;
+            var size = _containerRect.sizeDelta;
 
-            Plugin.Log?.LogInfo($"[ShorNet] Saved chat window position: {anchoredPos}.");
+            // Save both pos & size so we never lose one or the other
+            WindowLayoutStore.SetLayout(WindowId, anchoredPos, size);
+
+            Plugin.Log?.LogInfo($"[ShorNet] Saved chat window position: {anchoredPos} (size {size}).");
         }
 
         public static void AddMessage(string message)
@@ -279,8 +279,8 @@ namespace ShorNet
             }
 
             var labelGO = Object.Instantiate(_messageTemplate.gameObject, _messageContent);
-            var label = labelGO.GetComponent<TextMeshProUGUI>();
-            label.text = message;
+            var label   = labelGO.GetComponent<TextMeshProUGUI>();
+            label.text  = message;
             labelGO.SetActive(true);
 
             if (_scrollRect != null)
