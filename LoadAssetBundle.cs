@@ -4,10 +4,6 @@ using UnityEngine;
 
 namespace ShorNet
 {
-    /// <summary>
-    /// Centralized loader for the ShorNet UI AssetBundle (`netui`).
-    /// This ensures the bundle is only loaded ONCE and reused by all UI classes.
-    /// </summary>
     public static class LoadAssetBundle
     {
         private const string BundleFileName = "netui";
@@ -15,10 +11,7 @@ namespace ShorNet
         private static AssetBundle _bundle;
         private static string _bundlePath;
         private static bool _failed;
-
-        /// <summary>
-        /// Returns (and lazily loads) the shared AssetBundle instance.
-        /// </summary>
+        
         private static AssetBundle GetBundle()
         {
             if (_failed)
@@ -26,8 +19,7 @@ namespace ShorNet
 
             if (_bundle != null)
                 return _bundle;
-
-            // Resolve bundle path once
+            
             if (string.IsNullOrEmpty(_bundlePath))
             {
                 string assemblyPath = Assembly.GetExecutingAssembly().Location;
@@ -80,11 +72,7 @@ namespace ShorNet
 
             return instance;
         }
-
-        /// <summary>
-        /// Optional manual unload if you ever need to fully unload the bundle.
-        /// Currently NOT called from SNchatWindow / SNmenu to avoid breaking others that use it.
-        /// </summary>
+        
         public static void Unload(bool unloadAllLoadedObjects = false)
         {
             if (_bundle != null)
