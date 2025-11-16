@@ -53,7 +53,7 @@ namespace ShorNet
             PanelToResize.sizeDelta = newSize;
 
             // 🔹 Inform the UI controller that the container size changed
-            NetUIController.OnPanelResized(PanelToResize);
+            SNchatWindowController.OnPanelResized(PanelToResize);
         }
 
         public void OnPointerUp(PointerEventData eventData)
@@ -67,7 +67,7 @@ namespace ShorNet
             if (PanelToResize != null)
             {
                 // 🔹 One last notify so it can persist the final size
-                NetUIController.OnPanelResized(PanelToResize);
+                SNchatWindowController.OnPanelResized(PanelToResize);
             }
         }
     }

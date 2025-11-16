@@ -77,7 +77,7 @@ namespace ShorNet
                 {
                     string msg = $"{prefix}<color=red>{data.Message}</color>";
                     msg = WithTimestamp(msg);
-                    NetUIController.AddMessage(msg);
+                    SNchatWindowController.AddMessage(msg);
                     UpdateSocialLog.LogAdd(msg);
                     break;
                 }
@@ -86,7 +86,7 @@ namespace ShorNet
                 {
                     string msg = $"{prefix}<color=green>{data.Message}</color>";
                     msg = WithTimestamp(msg);
-                    NetUIController.AddMessage(msg);
+                    SNchatWindowController.AddMessage(msg);
                     UpdateSocialLog.LogAdd(msg);
                     break;
                 }
@@ -95,7 +95,7 @@ namespace ShorNet
                 {
                     string msg = $"{prefix}<color=green>{data.Message}</color>";
                     msg = WithTimestamp(msg);
-                    NetUIController.AddMessage(msg);
+                    SNchatWindowController.AddMessage(msg);
                     UpdateSocialLog.LogAdd(msg);
                     break;
                 }
@@ -127,7 +127,7 @@ namespace ShorNet
             }
             else
             {
-                NetUIController.AddMessage(stamped);
+                SNchatWindowController.AddMessage(stamped);
             }
         }
         

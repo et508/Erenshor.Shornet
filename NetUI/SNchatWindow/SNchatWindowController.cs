@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace ShorNet
 {
-    public static class NetUIController
+    public static class SNchatWindowController
     {
         private static GameObject _uiRoot;
 
@@ -47,14 +47,14 @@ namespace ShorNet
             _container = UICommon.Find(_uiRoot, "container")?.gameObject;
             if (_container == null)
             {
-                Plugin.Log?.LogError("[ShorNet] NetUIController: 'container' not found on netUI.");
+                Plugin.Log?.LogError("[ShorNet]: 'container' not found on SNchatWindow.");
                 return;
             }
 
             _containerRect = _container.GetComponent<RectTransform>();
             if (_containerRect == null)
             {
-                Plugin.Log?.LogError("[ShorNet] NetUIController: 'container' has no RectTransform.");
+                Plugin.Log?.LogError("[ShorNet]: SNchatWindow 'container' has no RectTransform.");
                 return;
             }
 
@@ -74,14 +74,14 @@ namespace ShorNet
             _panelBG = UICommon.Find(_uiRoot, "container/panelBG")?.gameObject;
             if (_panelBG == null)
             {
-                Plugin.Log?.LogError("[ShorNet] NetUIController: 'panelBG' not found under container.");
+                Plugin.Log?.LogError("[ShorNet] SNchatWindow: 'panelBG' not found under container.");
                 return;
             }
 
             _panelBGRect = _panelBG.GetComponent<RectTransform>();
             if (_panelBGRect == null)
             {
-                Plugin.Log?.LogError("[ShorNet] NetUIController: 'panelBG' has no RectTransform.");
+                Plugin.Log?.LogError("[ShorNet] SNchatWindow: 'panelBG' has no RectTransform.");
                 return;
             }
 
@@ -89,14 +89,14 @@ namespace ShorNet
             _messagePanel = UICommon.Find(_uiRoot, "container/panelBG/messagePanel")?.gameObject;
             if (_messagePanel == null)
             {
-                Plugin.Log?.LogError("[ShorNet] NetUIController: 'messagePanel' not found.");
+                Plugin.Log?.LogError("[ShorNet] SNchatWindow: 'messagePanel' not found.");
                 return;
             }
 
             _messagePanelRect = _messagePanel.GetComponent<RectTransform>();
             if (_messagePanelRect == null)
             {
-                Plugin.Log?.LogError("[ShorNet] NetUIController: 'messagePanel' has no RectTransform.");
+                Plugin.Log?.LogError("[ShorNet] SNchatWindow: 'messagePanel' has no RectTransform.");
                 return;
             }
 
@@ -104,35 +104,35 @@ namespace ShorNet
             var messageViewGO = UICommon.Find(_uiRoot, "container/panelBG/messagePanel/messageView")?.gameObject;
             if (messageViewGO == null)
             {
-                Plugin.Log?.LogError("[ShorNet] NetUIController: 'messageView' not found.");
+                Plugin.Log?.LogError("[ShorNet] SNchatWindow: 'messageView' not found.");
                 return;
             }
 
             _scrollRect = messageViewGO.GetComponent<ScrollRect>();
             if (_scrollRect == null)
             {
-                Plugin.Log?.LogError("[ShorNet] NetUIController: 'messageView' has no ScrollRect.");
+                Plugin.Log?.LogError("[ShorNet] SNchatWindow: 'messageView' has no ScrollRect.");
                 return;
             }
 
             _messageViewRect = messageViewGO.GetComponent<RectTransform>();
             if (_messageViewRect == null)
             {
-                Plugin.Log?.LogError("[ShorNet] NetUIController: 'messageView' has no RectTransform.");
+                Plugin.Log?.LogError("[ShorNet] SNchatWindow: 'messageView' has no RectTransform.");
                 return;
             }
 
             var viewport = _scrollRect.viewport;
             if (viewport == null)
             {
-                Plugin.Log?.LogError("[ShorNet] NetUIController: ScrollRect has no viewport assigned.");
+                Plugin.Log?.LogError("[ShorNet] SNchatWindow: ScrollRect has no viewport assigned.");
                 return;
             }
 
             _viewportRect = viewport.GetComponent<RectTransform>();
             if (_viewportRect == null)
             {
-                Plugin.Log?.LogError("[ShorNet] NetUIController: viewport has no RectTransform.");
+                Plugin.Log?.LogError("[ShorNet] SNchatWindow: viewport has no RectTransform.");
                 return;
             }
 
@@ -140,7 +140,7 @@ namespace ShorNet
             _messageContent = _viewportRect.Find("messageContent");
             if (_messageContent == null)
             {
-                Plugin.Log?.LogError("[ShorNet] NetUIController: 'messageContent' not found under messageView/Viewport.");
+                Plugin.Log?.LogError("[ShorNet] SNchatWindow: 'messageContent' not found under messageView/Viewport.");
                 return;
             }
 
@@ -148,14 +148,14 @@ namespace ShorNet
             var templateTransform = _messageContent.Find("messageTemplate");
             if (templateTransform == null)
             {
-                Plugin.Log?.LogError("[ShorNet] NetUIController: 'messageTemplate' not found under messageContent.");
+                Plugin.Log?.LogError("[ShorNet] SNchatWindow: 'messageTemplate' not found under messageContent.");
                 return;
             }
 
             _messageTemplate = templateTransform.GetComponent<TextMeshProUGUI>();
             if (_messageTemplate == null)
             {
-                Plugin.Log?.LogError("[ShorNet] NetUIController: 'messageTemplate' has no TextMeshProUGUI component.");
+                Plugin.Log?.LogError("[ShorNet] SNchatWindow: 'messageTemplate' has no TextMeshProUGUI component.");
                 return;
             }
 
@@ -204,7 +204,7 @@ namespace ShorNet
             }
             else
             {
-                Plugin.Log?.LogWarning("[ShorNet] NetUIController: panelBG not usable as drag handle.");
+                Plugin.Log?.LogWarning("[ShorNet] SNchatWindow: panelBG not usable as drag handle.");
             }
 
             // Resize handle
@@ -216,7 +216,7 @@ namespace ShorNet
             }
             else
             {
-                Plugin.Log?.LogWarning("[ShorNet] NetUIController: resizeHandle not found; window will not be resizable.");
+                Plugin.Log?.LogWarning("[ShorNet] SNchatWindow: resizeHandle not found; window will not be resizable.");
             }
 
             IsInitialized = true;
@@ -274,7 +274,7 @@ namespace ShorNet
         {
             if (!IsInitialized || _messageContent == null || _messageTemplate == null)
             {
-                Plugin.Log?.LogWarning("[ShorNet] NetUIController.AddMessage called before initialization.");
+                Plugin.Log?.LogWarning("[ShorNet] SNchatWindow.AddMessage called before initialization.");
                 return;
             }
 

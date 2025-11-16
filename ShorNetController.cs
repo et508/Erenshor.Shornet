@@ -81,8 +81,11 @@ namespace ShorNet
             _instance = host.GetComponent<ShorNetController>();
             if (_instance == null) _instance = host.AddComponent<ShorNetController>();
 
-            if (host.GetComponent<NetUI>() == null)
-                host.AddComponent<NetUI>();
+            if (host.GetComponent<SNchatWindow>() == null)
+                host.AddComponent<SNchatWindow>();
+            
+            if (host.GetComponent<SNmenu>() == null)
+                host.AddComponent<SNmenu>();
 
         }
 
