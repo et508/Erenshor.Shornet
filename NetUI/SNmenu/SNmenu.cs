@@ -35,7 +35,7 @@ namespace ShorNet
                 return;
             }
             
-            //SNmenuController.Initialize(_uiRoot);
+            SNbtnController.Initialize(_uiRoot);
 
             // We want this one visible by default
             _uiRoot.SetActive(false);

@@ -42,6 +42,7 @@
       <Compile Include="NetUI\Helpers\UICommon.cs" />
       <Compile Include="NetUI\SNchatWindow\SNchatWindow.cs" />
       <Compile Include="NetUI\SNchatWindow\SNchatWindowController.cs" />
+      <Compile Include="NetUI\SNmenu\SNbtnController.cs" />
       <Compile Include="NetUI\SNmenu\SNmenu.cs" />
       <Compile Include="Network\MessageSender.cs" />
       <Compile Include="Network\NetworkManager.cs" />
