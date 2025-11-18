@@ -53,7 +53,7 @@ namespace ShorNet
             
             if (SceneValidator.IsValidScene(next.name))
             {
-                _uiRoot.SetActive(true);
+                _uiRoot.SetActive(false); //TODO: change when ready to release menu
             }
         }
 
