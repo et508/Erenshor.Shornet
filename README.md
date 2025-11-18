@@ -9,12 +9,10 @@
 
 ## Features
 
->### Global Chat
+>## Global Chat
 >Live communication between all connected ShorNet players.
 
-
-
->## Installation
+## Installation
 >- Install [BepInEx](https://github.com/et508/Erenshor.BepInEx/releases/tag/e1)
 >- [Download the latest release](https://github.com/et508/Erenshor.LootManager/releases/latest)
 >- Extract the folder from Erenshor.ShorNet.zip into your `Erenshor\BepInEx\plugins\` folder.
