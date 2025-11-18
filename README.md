@@ -1,6 +1,6 @@
 ![GitHub Release](https://img.shields.io/github/v/release/et508/Erenshor.ShorNet?include_prereleases)![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/et508/Erenshor.ShorNet/total)
 
-<p style="text-align:center;">
+<p align="center">
   <img width="500" height="500" src="https://github.com/user-attachments/assets/d26f4b8f-9104-48af-a08c-15dd710c7926" />
 </p>
 
