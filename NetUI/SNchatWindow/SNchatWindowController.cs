@@ -187,12 +187,14 @@ namespace ShorNet
                 restorer.SavedSize = savedSize;
             }
 
-            // 🔹 Drag handle: use panelBG itself so clicking the border/background moves the window
+            // 🔹 Drag handle: panelBG moves the main container,
+            //     but snap-to-edge uses messagePanel's size for bounds.
             _dragHandle = _panelBG;
             if (_dragHandle != null && _containerRect != null)
             {
                 var dh = _dragHandle.GetComponent<DragHandler>() ?? _dragHandle.AddComponent<DragHandler>();
-                dh.PanelToMove = _containerRect;
+                dh.PanelToMove  = _containerRect;      // move the whole chat window
+                dh.SnapSizeRect = _messagePanelRect;   // snap based on message area
 
                 // Save window position when dragging finishes via WindowLayoutStore
                 dh.OnDragFinished = SaveWindowPosition;

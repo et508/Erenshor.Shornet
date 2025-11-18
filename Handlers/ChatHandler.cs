@@ -1,5 +1,3 @@
-using System;
-
 namespace ShorNet
 {
     public static class ChatHandler
@@ -8,10 +6,15 @@ namespace ShorNet
         {
             if (data.Type == PackageData.PackageType.ChatMessage)
             {
-                // 🔹 Channel-aware tag for future multichannel support
-                string channelTag = GetChannelTag(data.Channel);
-                // No [SHORNET] prefix for normal chat messages
-                string msg = $"{channelTag}{data.SenderName}: {data.Message}";
+                // Timestamp + channel-aware coloring
+                string timestamp    = GetTimestamp();
+                string channelLabel = GetChannelLabel(data.Channel);
+                string colorHex     = GetChannelColorHex(data.Channel);
+
+                // Entire line tinted by channel color
+                string msg =
+                    $"<color={colorHex}>[{timestamp}] {channelLabel} [{data.SenderName}]: {data.Message}</color>";
+
                 PushToUIAndGame(msg);
             }
             else if (data.Type == PackageData.PackageType.Information)
@@ -22,17 +25,12 @@ namespace ShorNet
 
         private static void HandleInformation(PackageData data)
         {
-            // 🔹 Only show [SHORNET] for server-originated messages
-            string prefix = data.SenderName == "[SERVER]"
-                ? "<color=purple>[SHORNET]</color> "
-                : string.Empty;
-
             switch (data.Info)
             {
                 case PackageData.InformationType.PlayerConnected:
                 {
                     string msg =
-                        $"{prefix}<color=yellow>{data.SenderName} has <color=green>connected</color> to ShorNet.</color>";
+                        $"<color=purple>[SHORNET]</color> <color=yellow>{data.SenderName} has <color=green>connected</color> to ShorNet.</color>";
                     PushToUIAndGame(msg);
                     break;
                 }
@@ -40,43 +38,42 @@ namespace ShorNet
                 case PackageData.InformationType.PlayerDisconnected:
                 {
                     string msg =
-                        $"{prefix}<color=yellow>{data.SenderName} has <color=red>disconnected</color> from ShorNet.</color>";
+                        $"<color=purple>[SHORNET]</color> <color=yellow>{data.SenderName} has <color=red>disconnected</color> from ShorNet.</color>";
                     PushToUIAndGame(msg);
                     break;
                 }
 
                 case PackageData.InformationType.PlayersOnline:
                 {
-                    string msg = $"{prefix}{data.Message}";
+                    string msg = $"<color=purple>[SHORNET]</color> {data.Message}";
                     PushToUIAndGame(msg);
                     break;
                 }
 
                 case PackageData.InformationType.VersionMismatch:
                 {
-                    string msg = $"{prefix}{data.Message}";
+                    string msg = $"<color=purple>[SHORNET]</color> {data.Message}";
                     PushToUIAndGame(msg);
                     break;
                 }
 
                 case PackageData.InformationType.BlacklistedMessage:
                 {
-                    string msg = $"{prefix}<color=red>{data.Message}</color>";
+                    string msg = $"<color=purple>[SHORNET]</color> <color=red>{data.Message}</color>";
                     PushToUIAndGame(msg);
                     break;
                 }
 
                 case PackageData.InformationType.MessageOfTheDay:
                 {
-                    string msg = $"{prefix}<color=yellow>{data.Message}</color>";
+                    string msg = $"<color=purple>[SHORNET]</color> <color=yellow>{data.Message}</color>";
                     PushToUIAndGame(msg);
                     break;
                 }
 
                 case PackageData.InformationType.KickPlayer:
                 {
-                    string msg = $"{prefix}<color=red>{data.Message}</color>";
-                    msg = WithTimestamp(msg);
+                    string msg = $"<color=purple>[SHORNET]</color> <color=red>{data.Message}</color>";
                     SNchatWindowController.AddMessage(msg);
                     UpdateSocialLog.LogAdd(msg);
                     break;
@@ -84,8 +81,7 @@ namespace ShorNet
 
                 case PackageData.InformationType.BanPlayer:
                 {
-                    string msg = $"{prefix}<color=green>{data.Message}</color>";
-                    msg = WithTimestamp(msg);
+                    string msg = $"<color=purple>[SHORNET]</color> <color=green>{data.Message}</color>";
                     SNchatWindowController.AddMessage(msg);
                     UpdateSocialLog.LogAdd(msg);
                     break;
@@ -93,8 +89,7 @@ namespace ShorNet
 
                 case PackageData.InformationType.UnbanPlayer:
                 {
-                    string msg = $"{prefix}<color=green>{data.Message}</color>";
-                    msg = WithTimestamp(msg);
+                    string msg = $"<color=purple>[SHORNET]</color> <color=green>{data.Message}</color>";
                     SNchatWindowController.AddMessage(msg);
                     UpdateSocialLog.LogAdd(msg);
                     break;
@@ -102,47 +97,57 @@ namespace ShorNet
             }
         }
 
-        // 🔹 Channel label helper
-        private static string GetChannelTag(PackageData.ChatChannel channel)
+        // 🔹 Simple timestamp: [HH:MM]
+        private static string GetTimestamp()
+        {
+            return System.DateTime.Now.ToString("HH:mm");
+        }
+
+        // 🔹 Channel label: [ALL], [TRADE], etc.
+        private static string GetChannelLabel(PackageData.ChatChannel channel)
         {
             switch (channel)
             {
                 case PackageData.ChatChannel.Trade:
-                    // Future-proof: this will show once we actually route /trade messages
-                    return "<color=#FFA500>[Trade]</color> ";
+                    return "[TRADE]";
 
                 case PackageData.ChatChannel.All:
                 default:
-                    return "<color=#8AAFFF>[All]</color> ";
+                    return "[ALL]";
+            }
+        }
+
+        // 🔹 Channel color used for the entire line
+        private static string GetChannelColorHex(PackageData.ChatChannel channel)
+        {
+            switch (channel)
+            {
+                case PackageData.ChatChannel.Trade:
+                    // Orange-ish
+                    return "#FFA500";
+
+                case PackageData.ChatChannel.All:
+                default:
+                    // Soft blue (same as before)
+                    return "#8AAFFF";
             }
         }
 
         public static void PushToUIAndGame(string msg)
         {
-            string stamped = WithTimestamp(msg);
-
             if (ConfigGenerator._enablePrintInChatWindow.Value)
             {
-                SendChatLogMessage(stamped);
+                SendChatLogMessage(msg);
             }
             else
             {
-                SNchatWindowController.AddMessage(stamped);
+                SNchatWindowController.AddMessage(msg);
             }
         }
         
         public static void SendChatLogMessage(string message)
         {
             UpdateSocialLog.LogAdd(message);
-        }
-
-        /// <summary>
-        /// Prepends a timestamp like [12:41] in a soft grey so it doesn't fight the channel colors.
-        /// </summary>
-        private static string WithTimestamp(string inner)
-        {
-            var now = DateTime.Now;
-            return $"<color=#888888>[{now:HH:mm}]</color> {inner}";
         }
     }
 }

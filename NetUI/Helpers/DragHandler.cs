@@ -6,17 +6,22 @@ namespace ShorNet
 {
     public class DragHandler : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
     {
+        // The RectTransform we actually move
         public RectTransform PanelToMove;
+
+        // Optional: RectTransform whose size is used for snap-to-edge bounds.
+        // If null, we fall back to PanelToMove.
+        public RectTransform SnapSizeRect;
 
         private bool _dragging;
         private Vector2 _offset;
 
-        // Optional callback so others (like SNchatWindowController) can react when dragging ends
+        // Optional callback so others can react when dragging ends
         public Action<Vector2> OnDragFinished;
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            if (eventData.button != PointerEventData.InputButton.Left || PanelToMove == null) 
+            if (eventData.button != PointerEventData.InputButton.Left || PanelToMove == null)
                 return;
 
             _dragging = true;
@@ -30,11 +35,11 @@ namespace ShorNet
 
         public void OnDrag(PointerEventData eventData)
         {
-            if (!_dragging || PanelToMove == null) 
+            if (!_dragging || PanelToMove == null)
                 return;
 
             RectTransform parent = PanelToMove.parent as RectTransform;
-            if (parent == null) 
+            if (parent == null)
                 return;
 
             Vector2 pointerPos;
@@ -44,15 +49,16 @@ namespace ShorNet
             // Desired anchored position before clamping
             Vector2 anchored = pointerPos - _offset;
 
-            // 🔹 Snap-to-screen-edge: clamp the panel so it stays fully on-screen
+            // 🔹 Snap-to-screen-edge: clamp so the chosen rect stays fully on-screen
             Rect parentRect = parent.rect;
-            Vector2 size = PanelToMove.sizeDelta;
 
-            // Assume centered pivot (0.5, 0.5) for container; works for typical UI setups
+            // Use override if provided; otherwise, fallback
+            RectTransform sizeRect = SnapSizeRect != null ? SnapSizeRect : PanelToMove;
+            Vector2 size = sizeRect.sizeDelta;
+
             float halfWidth  = size.x * 0.5f;
             float halfHeight = size.y * 0.5f;
 
-            // If the window is somehow bigger than the parent, bail out on clamping
             if (halfWidth * 2f <= parentRect.width && halfHeight * 2f <= parentRect.height)
             {
                 float minX = parentRect.xMin + halfWidth;
