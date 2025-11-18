@@ -27,7 +27,7 @@ namespace ShorNet
 
         private void LoadUIFromBundle()
         {
-            // Use shared loader instead of loading bundle directly
+            
             _uiRoot = LoadAssetBundle.CreateUIRoot(PrefabAssetName, true);
             if (_uiRoot == null)
             {
@@ -36,13 +36,12 @@ namespace ShorNet
             }
             
             SNbtnController.Initialize(_uiRoot);
-
-            // We want this one visible by default
+            
             _uiRoot.SetActive(false);
             
             SceneManager.activeSceneChanged += OnSceneWasInitialized;
 
-            // Apply correct visibility for the current active scene immediately
+            
             var active = SceneManager.GetActiveScene();
             OnSceneWasInitialized(active, active);
         }
@@ -74,8 +73,7 @@ namespace ShorNet
                 Destroy(_uiRoot);
                 _uiRoot = null;
             }
-
-            // Do NOT unload the shared AssetBundle here.
+            
             Instance = null;
         }
     }

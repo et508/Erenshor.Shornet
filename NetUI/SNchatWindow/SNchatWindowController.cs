@@ -27,25 +27,22 @@ namespace ShorNet
         private static ScrollRect _scrollRect;
         private static RectTransform _messageViewRect;
         private static RectTransform _viewportRect;
-
-        // Layout relationship caches
+        
         private static Vector2 _initialContainerSize;
         private static Vector2 _initialPanelBGSize;
         private static Vector2 _initialMessagePanelSize;
         private static Vector2 _initialMessageViewSize;
-
-        // Margins: parentSize - childSize
-        private static Vector2 _panelBGMargin;      // container - panelBG
-        private static Vector2 _messagePanelMargin; // panelBG - messagePanel
-        private static Vector2 _messageViewMargin;  // messagePanel - messageView
+        
+        private static Vector2 _panelBGMargin;      
+        private static Vector2 _messagePanelMargin; 
+        private static Vector2 _messageViewMargin;  
 
         public static bool IsInitialized { get; private set; }
 
         public static void Initialize(GameObject uiRoot)
         {
             _uiRoot = uiRoot;
-
-            // container
+            
             _container = UICommon.Find(_uiRoot, "container")?.gameObject;
             if (_container == null)
             {
@@ -59,19 +56,16 @@ namespace ShorNet
                 Plugin.Log?.LogError("[ShorNet]: SNchatWindow 'container' has no RectTransform.");
                 return;
             }
-
-            // Try to load any previously saved layout (position + size) from WindowLayoutStore
+            
             WindowLayout savedLayout = null;
             if (WindowLayoutStore.TryGetLayout(WindowId, out var layout))
             {
                 savedLayout = layout;
-                // Apply position right away
                 Vector2 pos = new Vector2(layout.PosX, layout.PosY);
                 _containerRect.anchoredPosition = pos;
                 Plugin.Log?.LogInfo($"[ShorNet] Restored chat window position to {pos}.");
             }
-
-            // panelBG
+            
             _panelBG = UICommon.Find(_uiRoot, "container/panelBG")?.gameObject;
             if (_panelBG == null)
             {
@@ -85,8 +79,7 @@ namespace ShorNet
                 Plugin.Log?.LogError("[ShorNet] SNchatWindow: 'panelBG' has no RectTransform.");
                 return;
             }
-
-            // messagePanel
+            
             _messagePanel = UICommon.Find(_uiRoot, "container/panelBG/messagePanel")?.gameObject;
             if (_messagePanel == null)
             {
@@ -100,8 +93,7 @@ namespace ShorNet
                 Plugin.Log?.LogError("[ShorNet] SNchatWindow: 'messagePanel' has no RectTransform.");
                 return;
             }
-
-            // messageView (ScrollRect)
+            
             var messageViewGO = UICommon.Find(_uiRoot, "container/panelBG/messagePanel/messageView")?.gameObject;
             if (messageViewGO == null)
             {
@@ -136,16 +128,14 @@ namespace ShorNet
                 Plugin.Log?.LogError("[ShorNet] SNchatWindow: viewport has no RectTransform.");
                 return;
             }
-
-            // messageContent
+            
             _messageContent = _viewportRect.Find("messageContent");
             if (_messageContent == null)
             {
                 Plugin.Log?.LogError("[ShorNet] SNchatWindow: 'messageContent' not found under messageView/Viewport.");
                 return;
             }
-
-            // messageTemplate
+            
             var templateTransform = _messageContent.Find("messageTemplate");
             if (templateTransform == null)
             {
@@ -161,8 +151,7 @@ namespace ShorNet
             }
 
             _messageTemplate.gameObject.SetActive(false);
-
-            // Cache initial sizes & margins to preserve visual spacing when resizing
+            
             _initialContainerSize     = _containerRect.sizeDelta;
             _initialPanelBGSize       = _panelBGRect.sizeDelta;
             _initialMessagePanelSize  = _messagePanelRect.sizeDelta;
@@ -171,8 +160,7 @@ namespace ShorNet
             _panelBGMargin      = _initialContainerSize    - _initialPanelBGSize;
             _messagePanelMargin = _initialPanelBGSize      - _initialMessagePanelSize;
             _messageViewMargin  = _initialMessagePanelSize - _initialMessageViewSize;
-
-            // 🔹 Restore saved window SIZE (after margins are cached so layout math stays correct)
+            
             if (savedLayout != null && (savedLayout.SizeX > 0f || savedLayout.SizeY > 0f))
             {
                 var savedSize = new Vector2(savedLayout.SizeX, savedLayout.SizeY);
@@ -180,38 +168,32 @@ namespace ShorNet
                 _containerRect.sizeDelta = savedSize;
                 RefreshLayout();
                 Plugin.Log?.LogInfo($"[ShorNet] Restored chat window size to {savedSize}.");
-
-                // Ensure size is re-applied after Unity's first layout pass
+                
                 var restorer = _container.AddComponent<SizeRestorer>();
                 restorer.Target    = _containerRect;
                 restorer.SavedSize = savedSize;
             }
-
-            // 🔹 Drag handle: panelBG moves the main container,
-            //     but snap-to-edge uses messagePanel's size for bounds.
+            
             _dragHandle = _panelBG;
             if (_dragHandle != null && _containerRect != null)
             {
                 var dh = _dragHandle.GetComponent<DragHandler>() ?? _dragHandle.AddComponent<DragHandler>();
-                dh.PanelToMove  = _containerRect;      // move the whole chat window
-                dh.SnapSizeRect = _messagePanelRect;   // snap based on message area
-
-                // Save window position when dragging finishes via WindowLayoutStore
+                dh.PanelToMove  = _containerRect;      
+                dh.SnapSizeRect = _messagePanelRect;   
+                
                 dh.OnDragFinished = SaveWindowPosition;
             }
             else
             {
                 Plugin.Log?.LogWarning("[ShorNet] SNchatWindow: panelBG not usable as drag handle.");
             }
-
-            // Resize handle
+            
             _resizeHandle = UICommon.Find(_uiRoot, "container/resizeHandle")?.gameObject;
             if (_resizeHandle != null && _containerRect != null)
             {
                 var rh = _resizeHandle.GetComponent<ResizeHandler>() ?? _resizeHandle.AddComponent<ResizeHandler>();
                 rh.PanelToResize = _containerRect;
-
-                // Wire generic callbacks to our layout refresh + size save
+                
                 rh.OnResizing       = OnPanelResized;
                 rh.OnResizeFinished = OnPanelResized;
             }
@@ -222,25 +204,20 @@ namespace ShorNet
 
             IsInitialized = true;
         }
-
-        /// <summary>
-        /// Called by ResizeHandler when the main container changes size.
-        /// Recomputes child sizes so original border/spacing is preserved and saves layout size.
-        /// </summary>
+        
         public static void OnPanelResized(RectTransform panel)
         {
             if (!IsInitialized || panel == null)
                 return;
 
             if (panel != _containerRect)
-                return; // only care about the ShorNet container
+                return;
 
             RefreshLayout();
 
             var size = _containerRect.sizeDelta;
             var pos  = _containerRect.anchoredPosition;
-
-            // Save both pos & size through the shared layout store
+            
             WindowLayoutStore.SetLayout(WindowId, pos, size);
 
             Plugin.Log?.LogInfo($"[ShorNet] Saved chat window size: {size} (pos {pos}).");
@@ -252,8 +229,7 @@ namespace ShorNet
                 return;
 
             var containerSize = _containerRect.sizeDelta;
-
-            // Maintain relationships using cached margins
+            
             _panelBGRect.sizeDelta      = containerSize - _panelBGMargin;
             _messagePanelRect.sizeDelta = _panelBGRect.sizeDelta - _messagePanelMargin;
             _messageViewRect.sizeDelta  = _messagePanelRect.sizeDelta - _messageViewMargin;
@@ -265,8 +241,7 @@ namespace ShorNet
                 return;
 
             var size = _containerRect.sizeDelta;
-
-            // Save both pos & size so we never lose one or the other
+            
             WindowLayoutStore.SetLayout(WindowId, anchoredPos, size);
 
             Plugin.Log?.LogInfo($"[ShorNet] Saved chat window position: {anchoredPos} (size {size}).");
@@ -291,8 +266,7 @@ namespace ShorNet
                 _scrollRect.verticalNormalizedPosition = 0f;
             }
         }
-
-        // 🔹 Helper MonoBehaviour: re-apply saved size after Unity finishes its first layout pass.
+        
         private sealed class SizeRestorer : MonoBehaviour
         {
             public RectTransform Target;

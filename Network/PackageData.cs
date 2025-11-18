@@ -40,6 +40,5 @@ namespace ShorNet
         public string SteamId;
 
         public ChatChannel Channel; 
-        // NOTE: Should default to ChatChannel.All unless explicitly set (handled in MessageSender)
     }
 }

@@ -26,8 +26,6 @@ namespace ShorNet
             SceneManager.activeSceneChanged += OnActiveSceneChanged_Static;
         }
 
-        // ---------- Static hooks / helpers ----------
-
         private static void OnSceneLoaded_Static(Scene scene, LoadSceneMode mode)
         {
             EnsureBootstrapExists();
@@ -88,8 +86,6 @@ namespace ShorNet
                 host.AddComponent<SNmenu>();
 
         }
-
-        // ---------- ShorNet Loader ----------
 
         private class Bootstrap : MonoBehaviour
         {

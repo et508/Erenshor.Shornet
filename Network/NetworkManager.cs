@@ -103,7 +103,6 @@ namespace ShorNet
                 ModVersion = modVersion,
                 ModHash = modHash,
                 SteamId = steamId
-                // No Signature
             };
             MessageSender.SendPackage(_serverPeer, data);
         }
@@ -124,7 +123,6 @@ namespace ShorNet
                 ModVersion = modVersion,
                 ModHash = modHash,
                 SteamId = steamId
-                // No Signature
             };
             MessageSender.SendPackage(_serverPeer, data);
             _serverPeer.Disconnect();

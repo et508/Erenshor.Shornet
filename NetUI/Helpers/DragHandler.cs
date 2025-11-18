@@ -6,17 +6,13 @@ namespace ShorNet
 {
     public class DragHandler : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
     {
-        // The RectTransform we actually move
         public RectTransform PanelToMove;
-
-        // Optional: RectTransform whose size is used for snap-to-edge bounds.
-        // If null, we fall back to PanelToMove.
+        
         public RectTransform SnapSizeRect;
 
         private bool _dragging;
         private Vector2 _offset;
-
-        // Optional callback so others can react when dragging ends
+        
         public Action<Vector2> OnDragFinished;
 
         public void OnPointerDown(PointerEventData eventData)
@@ -45,14 +41,11 @@ namespace ShorNet
             Vector2 pointerPos;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 parent, eventData.position, null, out pointerPos);
-
-            // Desired anchored position before clamping
+            
             Vector2 anchored = pointerPos - _offset;
-
-            // 🔹 Snap-to-screen-edge: clamp so the chosen rect stays fully on-screen
+            
             Rect parentRect = parent.rect;
-
-            // Use override if provided; otherwise, fallback
+            
             RectTransform sizeRect = SnapSizeRect != null ? SnapSizeRect : PanelToMove;
             Vector2 size = sizeRect.sizeDelta;
 

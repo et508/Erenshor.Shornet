@@ -1,14 +1,24 @@
-# "Name Of Mod"
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/ad64bac3-b02d-42b2-95bc-35c974ecdaa5" width="45%"/>
+</p>
 
-"Description of Mod"
+## Overview
+> **ShorNet** brings online-style features to *Erenshor*, a single-player RPG, using a custom server, BepInEx, Harmony, and a modular packet system.  
+> It powers global chat, multi-channel communication, window layout persistence, and will expand into systems like mail, auctions, guild synchronization, Discord linking, and more.
 
-## Installation
-- Install [BepInEx Mod Pack](https://thunderstore.io/c/erenshor/p/BepInEx/BepInExPack/)
-- Download the latest [release](github url link here)
-- Extract files from Erenshor."ModNameHere".zip into Erenshor\BepInEx\plugins\ folder.
 
-## "If Mod uses config changes put that here"
-- Run Erenshor so the config file will be automatically created
-- Open *et508.erenshor."modnamehere"* in your Erenshor\BepInEx\config
-- Change values to your liking
-- I recommend using a config manager like [BepInExConfigManager](https://github.com/sinai-dev/BepInExConfigManager) for easier config changes from ingame
+## Features
+
+>### Global Chat
+>Live communication between all connected ShorNet players.
+
+
+
+>## Installation
+>- Install [BepInEx](https://github.com/et508/Erenshor.BepInEx/releases/tag/e1)
+>- [Download the latest release](https://github.com/et508/Erenshor.LootManager/releases/latest)
+>- Extract the folder from Erenshor.ShorNet.zip into your `Erenshor\BepInEx\plugins\` folder.
+
+### Requirements
+- Erenshor (Steam)
+- BepInEx 5.4.23+

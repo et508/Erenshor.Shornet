@@ -7,9 +7,6 @@ using UnityEngine;
 
 namespace ShorNet
 {
-    /// <summary>
-    /// Simple serializable layout record for a window.
-    /// </summary>
     public class WindowLayout
     {
         public float PosX;
@@ -17,11 +14,7 @@ namespace ShorNet
         public float SizeX;
         public float SizeY;
     }
-
-    /// <summary>
-    /// Central store for all window layouts (positions & sizes).
-    /// Backed by BepInEx/config/ShorNet/windowlayouts.json.
-    /// </summary>
+    
     public static class WindowLayoutStore
     {
         private static bool _loaded;
@@ -29,10 +22,7 @@ namespace ShorNet
             new Dictionary<string, WindowLayout>(StringComparer.OrdinalIgnoreCase);
 
         private static string LayoutFilePath => ShorNetSetup.WindowLayoutsPath;
-
-        /// <summary>
-        /// Load layouts from JSON (no-op if already loaded).
-        /// </summary>
+        
         public static void Load()
         {
             if (_loaded)
@@ -42,12 +32,10 @@ namespace ShorNet
 
             try
             {
-                // Ensure base folder/file exist
                 ShorNetSetup.EnsureInitialized();
 
                 if (!File.Exists(LayoutFilePath))
                 {
-                    // Nothing to load yet
                     Plugin.Log?.LogInfo("[WindowLayoutStore] No existing layout file found; starting empty.");
                     return;
                 }
@@ -67,10 +55,7 @@ namespace ShorNet
                 Plugin.Log?.LogError($"[WindowLayoutStore] Failed to load layouts: {ex}");
             }
         }
-
-        /// <summary>
-        /// Save current layouts to JSON.
-        /// </summary>
+        
         public static void Save()
         {
             try
@@ -87,19 +72,13 @@ namespace ShorNet
                 Plugin.Log?.LogError($"[WindowLayoutStore] Failed to save layouts: {ex}");
             }
         }
-
-        /// <summary>
-        /// Try to get a stored layout for a given window key.
-        /// </summary>
+        
         public static bool TryGetLayout(string key, out WindowLayout layout)
         {
             Load();
             return _layouts.TryGetValue(key, out layout);
         }
-
-        /// <summary>
-        /// Set/update layout for a given window key and immediately save.
-        /// </summary>
+        
         public static void SetLayout(string key, Vector2 position, Vector2 size)
         {
             Load();
@@ -114,10 +93,7 @@ namespace ShorNet
 
             Save();
         }
-
-        /// <summary>
-        /// Helper to apply a stored layout (if present) to a RectTransform.
-        /// </summary>
+        
         public static bool ApplyToRectTransform(string key, RectTransform rect)
         {
             if (rect == null)

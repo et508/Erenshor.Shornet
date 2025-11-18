@@ -26,28 +26,24 @@ namespace ShorNet
             Log = Logger;
             
             ConfigGenerator.GenerateConfig(this);
-
-            // 🔹 Ensure ShorNet config folders/files + window layout store are ready
+            
             ShorNetSetup.EnsureInitialized();
             WindowLayoutStore.Load();
 
             SceneManager.activeSceneChanged += OnSceneWasInitialized;
-
-            // Apply all patches
+            
             var harmony = new Harmony("et508.erenshor.shornet");
             harmony.PatchAll();
             
             ShorNetController.Initialize();
             
             Log.LogInfo("All ShorNet patches have been loaded!");
-
-            // Print hash
+            
             Log.LogInfo($"ShorNet Plugin Hash: {GetModHash()}");
         }
 
         public static string GetModHash()
         {
-            // Path to current DLL
             string dllPath = Assembly.GetExecutingAssembly().Location;
 
             if (!File.Exists(dllPath))

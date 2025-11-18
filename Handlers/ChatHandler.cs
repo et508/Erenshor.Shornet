@@ -6,12 +6,10 @@ namespace ShorNet
         {
             if (data.Type == PackageData.PackageType.ChatMessage)
             {
-                // Timestamp + channel-aware coloring
                 string timestamp    = GetTimestamp();
                 string channelLabel = GetChannelLabel(data.Channel);
                 string colorHex     = GetChannelColorHex(data.Channel);
-
-                // Entire line tinted by channel color
+                
                 string msg =
                     $"<color={colorHex}>[{timestamp}] {channelLabel} [{data.SenderName}]: {data.Message}</color>";
 
@@ -96,14 +94,12 @@ namespace ShorNet
                 }
             }
         }
-
-        // 🔹 Simple timestamp: [HH:MM]
+        
         private static string GetTimestamp()
         {
             return System.DateTime.Now.ToString("HH:mm");
         }
-
-        // 🔹 Channel label: [ALL], [TRADE], etc.
+        
         private static string GetChannelLabel(PackageData.ChatChannel channel)
         {
             switch (channel)
@@ -116,19 +112,16 @@ namespace ShorNet
                     return "[ALL]";
             }
         }
-
-        // 🔹 Channel color used for the entire line
+        
         private static string GetChannelColorHex(PackageData.ChatChannel channel)
         {
             switch (channel)
             {
                 case PackageData.ChatChannel.Trade:
-                    // Orange-ish
                     return "#FFA500";
 
                 case PackageData.ChatChannel.All:
                 default:
-                    // Soft blue (same as before)
                     return "#8AAFFF";
             }
         }

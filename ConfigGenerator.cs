@@ -8,13 +8,7 @@ namespace ShorNet
         public static ConfigEntry<string> _serverIp;
         public static ConfigEntry<int> _serverPort;
         public static ConfigEntry<bool> _enablePrintInChatWindow;
-
-        // NOTE:
-        // Window position/size persistence is now managed by:
-        //   /BepInEx/config/ShorNet/windowlayouts.json
-        // via the WindowLayoutStore class.
-        // These fields have been removed to prevent redundancy.
-
+        
         public static void GenerateConfig(BaseUnityPlugin baseUnityPlugin)
         {
             _serverIp = baseUnityPlugin.Config.Bind(
