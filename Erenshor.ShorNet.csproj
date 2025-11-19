@@ -37,6 +37,7 @@
       <Compile Include="Handlers\ChatHandler.cs" />
       <Compile Include="Handlers\MessageHandler.cs" />
       <Compile Include="LoadAssetBundle.cs" />
+      <Compile Include="NetUI\Helpers\DebounceInvoker.cs" />
       <Compile Include="NetUI\Helpers\DragHandler.cs" />
       <Compile Include="NetUI\Helpers\ResizeHandler.cs" />
       <Compile Include="NetUI\Helpers\UICommon.cs" />
