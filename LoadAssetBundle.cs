@@ -40,11 +40,6 @@ namespace ShorNet
                 Debug.LogError("[NetUI] Failed to load AssetBundle!");
                 _failed = true;
             }
-            else
-            {
-                Debug.Log($"[NetUI] Loaded AssetBundle from '{_bundlePath}'.");
-            }
-
             return _bundle;
         }
         
@@ -80,7 +75,6 @@ namespace ShorNet
                 _bundle.Unload(unloadAllLoadedObjects);
                 _bundle = null;
                 _failed = false;
-                Debug.Log("[NetUI] AssetBundle unloaded.");
             }
         }
     }

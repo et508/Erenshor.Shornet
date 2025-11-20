@@ -37,8 +37,6 @@ namespace ShorNet
             
             ShorNetController.Initialize();
             
-            Log.LogInfo("All ShorNet patches have been loaded!");
-            
             Log.LogInfo($"ShorNet Plugin Hash: {GetModHash()}");
         }
 

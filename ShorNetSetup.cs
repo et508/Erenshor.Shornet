@@ -33,8 +33,6 @@ namespace ShorNet
                     var empty = new Dictionary<string, WindowLayout>();
                     string json = JsonConvert.SerializeObject(empty, Formatting.Indented);
                     File.WriteAllText(WindowLayoutsPath, json);
-
-                    Plugin.Log?.LogInfo($"[ShorNetSetup] Created layout file at: {WindowLayoutsPath}");
                 }
             }
             catch (Exception ex)

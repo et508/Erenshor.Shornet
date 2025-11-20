@@ -37,12 +37,10 @@ namespace ShorNet
         private static Vector2 _panelBGMargin;      
         private static Vector2 _messagePanelMargin; 
         private static Vector2 _messageViewMargin;  
-
-        // 🔹 Debounce + message limit
+        
         private static DebounceInvoker _debouncer;
         private const int MaxMessages = 500;
-
-        // CHANGED: Use List<string> instead of Queue<string> to avoid Unity's Queue<> resolution issue
+        
         private static readonly List<string> _pendingMessages = new List<string>();
 
         public static bool IsInitialized { get; private set; }
@@ -71,7 +69,6 @@ namespace ShorNet
                 savedLayout = layout;
                 Vector2 pos = new Vector2(layout.PosX, layout.PosY);
                 _containerRect.anchoredPosition = pos;
-                Plugin.Log?.LogInfo($"[ShorNet] Restored chat window position to {pos}.");
             }
             
             _panelBG = UICommon.Find(_uiRoot, "container/panelBG")?.gameObject;
@@ -175,7 +172,6 @@ namespace ShorNet
 
                 _containerRect.sizeDelta = savedSize;
                 RefreshLayout();
-                Plugin.Log?.LogInfo($"[ShorNet] Restored chat window size to {savedSize}.");
                 
                 var restorer = _container.AddComponent<SizeRestorer>();
                 restorer.Target    = _containerRect;
@@ -209,8 +205,7 @@ namespace ShorNet
             {
                 Plugin.Log?.LogWarning("[ShorNet] SNchatWindow: resizeHandle not found; window will not be resizable.");
             }
-
-            // 🔹 Attach debounce invoker for batched UI updates
+            
             _debouncer = DebounceInvoker.Attach(_uiRoot);
 
             IsInitialized = true;
@@ -230,8 +225,6 @@ namespace ShorNet
             var pos  = _containerRect.anchoredPosition;
             
             WindowLayoutStore.SetLayout(WindowId, pos, size);
-
-            Plugin.Log?.LogInfo($"[ShorNet] Saved chat window size: {size} (pos {pos}).");
         }
 
         private static void RefreshLayout()
@@ -254,19 +247,15 @@ namespace ShorNet
             var size = _containerRect.sizeDelta;
             
             WindowLayoutStore.SetLayout(WindowId, anchoredPos, size);
-
-            Plugin.Log?.LogInfo($"[ShorNet] Saved chat window position: {anchoredPos} (size {size}).");
         }
-
-        // 🔹 Flush pending messages: instantiate, trim to MaxMessages, scroll to bottom
+        
         private static void FlushPendingMessages()
         {
             if (!IsInitialized || _messageContent == null || _messageTemplate == null)
                 return;
 
             bool addedAny = false;
-
-            // CHANGED: Consume from List<string> as FIFO
+            
             while (_pendingMessages.Count > 0)
             {
                 var text = _pendingMessages[0];
@@ -282,8 +271,7 @@ namespace ShorNet
 
             if (!addedAny)
                 return;
-
-            // child[0] is template, real rows start at index 1
+            
             int realRowCount = _messageContent.childCount - 1;
             int over = realRowCount - MaxMessages;
             while (over > 0 && _messageContent.childCount > 1)
@@ -307,8 +295,7 @@ namespace ShorNet
                 Plugin.Log?.LogWarning("[ShorNet] SNchatWindow.AddMessage called before initialization.");
                 return;
             }
-
-            // CHANGED: List add instead of Queue.Enqueue
+            
             _pendingMessages.Add(message);
 
             if (_debouncer != null)

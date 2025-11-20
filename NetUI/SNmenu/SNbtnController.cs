@@ -50,12 +50,6 @@ namespace ShorNet
                 {
                     var size = new Vector2(layout.SizeX, layout.SizeY);
                     _btnRect.sizeDelta = size;
-                    Plugin.Log?.LogInfo("[ShorNet] Restored SNmenu button layout: pos "
-                        + pos + " size " + size + ".");
-                }
-                else
-                {
-                    Plugin.Log?.LogInfo("[ShorNet] Restored SNmenu button position to " + pos + ".");
                 }
             }
             
@@ -104,7 +98,6 @@ namespace ShorNet
             dh.OnDragFinished = SaveWindowLayout;
 
             IsInitialized = true;
-            Plugin.Log?.LogInfo("[ShorNet] SNbtnController initialized successfully.");
         }
         
         private static void SaveWindowLayout(Vector2 anchoredPos)
@@ -114,9 +107,6 @@ namespace ShorNet
 
             var size = _btnRect.sizeDelta;
             WindowLayoutStore.SetLayout(WindowId, anchoredPos, size);
-
-            Plugin.Log?.LogInfo("[ShorNet] Saved SNmenu button layout: pos "
-                + anchoredPos + " size " + size + ".");
         }
 
        

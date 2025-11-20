@@ -36,7 +36,7 @@ namespace ShorNet
 
                 if (!File.Exists(LayoutFilePath))
                 {
-                    Plugin.Log?.LogInfo("[WindowLayoutStore] No existing layout file found; starting empty.");
+                    Plugin.Log?.LogInfo("[WindowLayout] No existing layout file found; starting empty.");
                     return;
                 }
 
@@ -64,8 +64,6 @@ namespace ShorNet
 
                 string json = JsonConvert.SerializeObject(_layouts, Formatting.Indented);
                 File.WriteAllText(LayoutFilePath, json);
-
-                Plugin.Log?.LogInfo("[WindowLayoutStore] Layouts saved.");
             }
             catch (Exception ex)
             {
