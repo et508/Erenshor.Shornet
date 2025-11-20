@@ -11,7 +11,7 @@ using BepInEx.Logging;
 
 namespace ShorNet
 {
-    [BepInPlugin("et508.erenshor.shornet", "ShorNet", "0.0.0")]
+    [BepInPlugin("et508.erenshor.shornet", "ShorNet", "0.1.0")]
     [BepInProcess("Erenshor.exe")]
     public class Plugin : BaseUnityPlugin
     {
