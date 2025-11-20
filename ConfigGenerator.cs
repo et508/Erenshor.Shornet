@@ -14,7 +14,7 @@ namespace ShorNet
             _serverIp = baseUnityPlugin.Config.Bind(
                 "Connection",
                 "ServerIP",
-                "127.0.0.1", //TODO: Change to actual server IP
+                "165.227.186.68", //TODO: Change to actual server IP
                 "The IP address of the ShorNet server."
             );
 

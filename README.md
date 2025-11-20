@@ -6,14 +6,15 @@
 
 ## Overview
 
-> **ShorNet** brings online-style features to *Erenshor*, a single-player RPG, giving it a MMO-like experience. 
-> It powers a global chat and will expand into systems like mail, auctions, guilds, and more.
+**ShorNet** brings online-style features to *Erenshor*, giving it a MMO-like experience. At current it only features a global chat, but with plans to expand into other systems like mail, auctions, guilds, and more.
 
+**NOTE:** ShorNet is still in early development. Expect bugs and incomplete features. 
 
 ## Features
 
 >### Global Chat
->Live communication between all connected ShorNet players.
+>Live communication between all connected ShorNet players. 
+>With its own chatbox, ShorNet chat runs independently from Erenshor's SimPlayer chat.
 >- Prefix messages with @ (e.g. @Hello everyone!)
 >- Use @@ to toggle chat mode and type freely
 >- See online players with /@online
@@ -22,3 +23,23 @@
 >- Install [BepInEx](https://github.com/et508/Erenshor.BepInEx/releases/tag/e1)
 >- [Download the latest release](https://github.com/et508/Erenshor.ShorNet/releases/latest)
 >- Extract the folder from Erenshor.ShorNet.zip into your `Erenshor\BepInEx\plugins\` folder.
+
+## Planned Features
+>- Chat System Enhancements
+>  - Private messages
+>  - Chat channels
+>- Mail System 
+>  - Send gold 
+>  - Send items 
+>  - Message attachments 
+>  - Persistent mailbox 
+>  - Pickup receipts 
+>  - Delivery notifications
+>- Auction House
+>  - Browsing UI
+>  - Delivery through mail
+>  - Seller notifications
+>- Friend System
+>  - Friends List
+>  - Player presence (online/offline)
+>  - "Last Seen" timestamps
