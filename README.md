@@ -25,21 +25,25 @@
 >- Extract the folder from Erenshor.ShorNet.zip into your `Erenshor\BepInEx\plugins\` folder.
 
 ## Planned Features
->- Chat System Enhancements
+
+Chat System Enhancements
 >  - Private messages
 >  - Chat channels
->- Mail System 
+
+Mail System 
 >  - Send gold 
 >  - Send items 
 >  - Message attachments 
 >  - Persistent mailbox 
 >  - Pickup receipts 
 >  - Delivery notifications
->- Auction House
+
+Auction House
 >  - Browsing UI
 >  - Delivery through mail
 >  - Seller notifications
->- Friend System
+
+Friend System
 >  - Friends List
 >  - Player presence (online/offline)
 >  - "Last Seen" timestamps
