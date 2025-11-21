@@ -34,8 +34,8 @@
     </PropertyGroup>
     <ItemGroup>
       <Compile Include="ConfigGenerator.cs" />
-      <Compile Include="Handlers\ChatHandler.cs" />
-      <Compile Include="Handlers\MessageHandler.cs" />
+      <Compile Include="Chat.System\ChatHandler.cs" />
+      <Compile Include="Chat.System\MessageHandler.cs" />
       <Compile Include="LoadAssetBundle.cs" />
       <Compile Include="NetUI\Helpers\DebounceInvoker.cs" />
       <Compile Include="NetUI\Helpers\DragHandler.cs" />

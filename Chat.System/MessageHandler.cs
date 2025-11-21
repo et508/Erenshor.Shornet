@@ -114,10 +114,12 @@ namespace ShorNet
 
             private static void ResetPlayerUI(TypeText __instance)
             {
+                if (__instance == null)
+                    return;
+
                 __instance.typed.text = "";
-                __instance.CDFrames = 10f;
-                __instance.InputBox.SetActive(false);
-                GameData.PlayerTyping = false;
+                
+                __instance.CloseInputBox();
             }
         }
     }
