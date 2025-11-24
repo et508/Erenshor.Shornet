@@ -68,30 +68,6 @@ namespace ShorNet
                     PushToUIAndGame(msg);
                     break;
                 }
-
-                case PackageData.InformationType.KickPlayer:
-                {
-                    string msg = $"<color=purple>[SHORNET]</color> <color=red>{data.Message}</color>";
-                    SNchatWindowController.AddMessage(msg);
-                    UpdateSocialLog.LogAdd(msg);
-                    break;
-                }
-
-                case PackageData.InformationType.BanPlayer:
-                {
-                    string msg = $"<color=purple>[SHORNET]</color> <color=green>{data.Message}</color>";
-                    SNchatWindowController.AddMessage(msg);
-                    UpdateSocialLog.LogAdd(msg);
-                    break;
-                }
-
-                case PackageData.InformationType.UnbanPlayer:
-                {
-                    string msg = $"<color=purple>[SHORNET]</color> <color=green>{data.Message}</color>";
-                    SNchatWindowController.AddMessage(msg);
-                    UpdateSocialLog.LogAdd(msg);
-                    break;
-                }
             }
         }
         

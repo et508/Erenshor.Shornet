@@ -6,23 +6,34 @@ using Steamworks;
 
 namespace ShorNet
 {
-    public class MessageSender
+    public static class MessageSender
     {
         public static void SendPackage(NetPeer peer, PackageData data)
         {
+            if (peer == null)
+                return;
+
             var writer   = new NetDataWriter();
             var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
+
             writer.Put(JsonConvert.SerializeObject(data, settings));
             peer.Send(writer, DeliveryMethod.ReliableOrdered);
         }
 
+        // ----------------------------------------------------
+        //  Chat Message
+        // ----------------------------------------------------
         public static void SendChatMessage(string message)
         {
-            if (Plugin.GetNetworkManager().GetPeer() == null)
+            var peer = Plugin.GetNetworkManager().GetPeer();
+            if (peer == null)
             {
                 ChatHandler.PushToUIAndGame("No connection to the ShorNet server. Couldn't send message.");
                 return;
             }
+
+            if (string.IsNullOrWhiteSpace(message))
+                return;
 
             if (message.Length > 255)
             {
@@ -35,20 +46,24 @@ namespace ShorNet
                 SenderName = Plugin.GetSteamUsername(),
                 Type       = PackageData.PackageType.ChatMessage,
                 Message    = message,
-                Channel    = PackageData.ChatChannel.All, // 🔹 New: all chat is on [All] for now
+                Channel    = PackageData.ChatChannel.All,
                 ModVersion = Chainloader.PluginInfos["et508.erenshor.shornet"].Metadata.Version.ToString(),
                 ModHash    = Plugin.GetModHash(),
                 SteamId    = SteamUser.GetSteamID().ToString()
             };
 
-            SendPackage(Plugin.GetNetworkManager().GetPeer(), data);
+            SendPackage(peer, data);
         }
 
+        // ----------------------------------------------------
+        //  /shor online
+        // ----------------------------------------------------
         public static void SendRequestForOnlinePlayers()
         {
-            if (Plugin.GetNetworkManager().GetPeer() == null)
+            var peer = Plugin.GetNetworkManager().GetPeer();
+            if (peer == null)
             {
-                ChatHandler.PushToUIAndGame("No connection to the ShorNet server. Couldn't send message.");
+                ChatHandler.PushToUIAndGame("No connection to the ShorNet server. Couldn't send request.");
                 return;
             }
 
@@ -62,97 +77,7 @@ namespace ShorNet
                 SteamId    = SteamUser.GetSteamID().ToString()
             };
 
-            SendPackage(Plugin.GetNetworkManager().GetPeer(), data);
-        }
-
-        public static void SendRequestToKickPlayer(int peerId)
-        {
-            if (Plugin.GetNetworkManager().GetPeer() == null)
-            {
-                ChatHandler.PushToUIAndGame("No connection to the ShorNet server. Couldn't send command.");
-                return;
-            }
-
-            var data = new PackageData
-            {
-                SenderName = Plugin.GetSteamUsername(),
-                Type       = PackageData.PackageType.Information,
-                Info       = PackageData.InformationType.KickPlayer,
-                Message    = peerId.ToString(),
-                ModVersion = Chainloader.PluginInfos["et508.erenshor.shornet"].Metadata.Version.ToString(),
-                ModHash    = Plugin.GetModHash(),
-                SteamId    = SteamUser.GetSteamID().ToString()
-            };
-
-            SendPackage(Plugin.GetNetworkManager().GetPeer(), data);
-        }
-
-        public static void SendRequestToBanPlayer(int peerId, int durationInSeconds)
-        {
-            if (Plugin.GetNetworkManager().GetPeer() == null)
-            {
-                UpdateSocialLog.LogAdd("No connection to the ShorNet server. Couldn't send command.");
-                return;
-            }
-
-            var data = new PackageData
-            {
-                SenderName = Plugin.GetSteamUsername(),
-                Type       = PackageData.PackageType.Information,
-                Info       = PackageData.InformationType.BanPlayer,
-                Message    = peerId.ToString(),
-                Duration   = durationInSeconds,
-                ModVersion = Chainloader.PluginInfos["et508.erenshor.shornet"].Metadata.Version.ToString(),
-                ModHash    = Plugin.GetModHash(),
-                SteamId    = SteamUser.GetSteamID().ToString()
-            };
-
-            SendPackage(Plugin.GetNetworkManager().GetPeer(), data);
-        }
-
-        public static void SendRequestToBanPlayer(int peerId)
-        {
-            if (Plugin.GetNetworkManager().GetPeer() == null)
-            {
-                UpdateSocialLog.LogAdd("No connection to the ShorNet server. Couldn't send command.");
-                return;
-            }
-
-            var data = new PackageData
-            {
-                SenderName = Plugin.GetSteamUsername(),
-                Type       = PackageData.PackageType.Information,
-                Info       = PackageData.InformationType.BanPlayer,
-                Message    = peerId.ToString(),
-                Duration   = -1,
-                ModVersion = Chainloader.PluginInfos["et508.erenshor.shornet"].Metadata.Version.ToString(),
-                ModHash    = Plugin.GetModHash(),
-                SteamId    = SteamUser.GetSteamID().ToString()
-            };
-
-            SendPackage(Plugin.GetNetworkManager().GetPeer(), data);
-        }
-
-        public static void SendRequestToUnbanPlayer(string steamId)
-        {
-            if (Plugin.GetNetworkManager().GetPeer() == null)
-            {
-                UpdateSocialLog.LogAdd("No connection to the ShorNet server. Couldn't send command.");
-                return;
-            }
-
-            var data = new PackageData
-            {
-                SenderName = Plugin.GetSteamUsername(),
-                Type       = PackageData.PackageType.Information,
-                Info       = PackageData.InformationType.UnbanPlayer,
-                Message    = steamId,
-                ModVersion = Chainloader.PluginInfos["et508.erenshor.shornet"].Metadata.Version.ToString(),
-                ModHash    = Plugin.GetModHash(),
-                SteamId    = SteamUser.GetSteamID().ToString()
-            };
-
-            SendPackage(Plugin.GetNetworkManager().GetPeer(), data);
+            SendPackage(peer, data);
         }
     }
 }
