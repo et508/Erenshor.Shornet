@@ -3,11 +3,10 @@
 
 * Resolved an issue where using ShorNet chat commands caused the **in-game chat window** to clip, mis-scroll, or display text outside its bounds.
 * Corrected the command handler to properly close the game's input box, restoring normal layout and scrolling behavior.
+---
 
 ## [0.1-Beta]
-This is a **public beta** release of **ShorNet**. 
-
----
+This is a **public beta** release of **ShorNet**.
 
 ## Features
 
@@ -28,8 +27,6 @@ This is a **public beta** release of **ShorNet**.
 ### **Server Infrastructure**
 
 * Version handshake and connection validation
-
----
 
 ### Known Issues / Limitations
 
