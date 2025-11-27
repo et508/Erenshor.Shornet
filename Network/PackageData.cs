@@ -23,8 +23,8 @@ namespace ShorNet
         
         public enum ChatChannel
         {
-            All   = 0,
-            Trade = 1,
+            Global = 0,
+            Trade  = 1,
         }
 
         public PackageType Type;

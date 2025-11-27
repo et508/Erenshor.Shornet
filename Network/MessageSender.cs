@@ -46,7 +46,7 @@ namespace ShorNet
                 SenderName = Plugin.GetSteamUsername(),
                 Type       = PackageData.PackageType.ChatMessage,
                 Message    = message,
-                Channel    = PackageData.ChatChannel.All,
+                Channel    = PackageData.ChatChannel.Global,
                 ModVersion = Chainloader.PluginInfos["et508.erenshor.shornet"].Metadata.Version.ToString(),
                 ModHash    = Plugin.GetModHash(),
                 SteamId    = SteamUser.GetSteamID().ToString()

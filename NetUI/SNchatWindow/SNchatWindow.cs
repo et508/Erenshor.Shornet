@@ -8,8 +8,10 @@ namespace ShorNet
         public static SNchatWindow Instance { get; private set; }
 
         private const string PrefabAssetName = "SNchatWindow";
+        private const string TabButtonPrefabName = "ChatTabButton";
 
         private GameObject _uiRoot;
+        private GameObject _tabButtonPrefab;
 
         private void Awake()
         {
@@ -27,21 +29,37 @@ namespace ShorNet
 
         private void LoadUIFromBundle()
         {
+            // Load main window
             _uiRoot = LoadAssetBundle.CreateUIRoot(PrefabAssetName, true);
             if (_uiRoot == null)
             {
                 Debug.LogError("[NetUI] SNchatWindow failed to create UI root from prefab.");
                 return;
             }
-            
-            SNchatWindowController.Initialize(_uiRoot);
-            
+
+            // Load ChatTabButton prefab from same AssetBundle
+            var bundle = LoadAssetBundle.GetBundleForInternalUse();
+            if (bundle == null)
+            {
+                Debug.LogError("[NetUI] Could not load bundle for ChatTabButton.");
+                return;
+            }
+
+            _tabButtonPrefab = bundle.LoadAsset<GameObject>(TabButtonPrefabName);
+            if (_tabButtonPrefab == null)
+            {
+                Debug.LogError($"[NetUI] ChatTabButton prefab '{TabButtonPrefabName}' not found in bundle.");
+                return;
+            }
+
+            // Initialize chat window controller WITH TAB BUTTON SUPPORT
+            SNchatWindowController.Initialize(_uiRoot, _tabButtonPrefab);
+
             DontDestroyOnLoad(_uiRoot);
-            
             _uiRoot.SetActive(false);
 
             SceneManager.activeSceneChanged += OnSceneWasInitialized;
-            
+
             var active = SceneManager.GetActiveScene();
             OnSceneWasInitialized(active, active);
         }
@@ -50,13 +68,13 @@ namespace ShorNet
         {
             if (_uiRoot == null)
                 return;
-            
+
             if (!SceneValidator.IsValidScene(next.name))
             {
                 _uiRoot.SetActive(false);
                 return;
             }
-            
+
             if (ConfigGenerator._enablePrintInChatWindow.Value)
             {
                 _uiRoot.SetActive(false);
@@ -85,7 +103,7 @@ namespace ShorNet
                 Destroy(_uiRoot);
                 _uiRoot = null;
             }
-            
+
             Instance = null;
         }
     }

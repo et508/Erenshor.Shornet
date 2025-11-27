@@ -33,6 +33,7 @@
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
+      <Compile Include="Chat.System\CommandRegistry.cs" />
       <Compile Include="ConfigGenerator.cs" />
       <Compile Include="Chat.System\ChatHandler.cs" />
       <Compile Include="Chat.System\MessageHandler.cs" />
@@ -41,6 +42,7 @@
       <Compile Include="NetUI\Helpers\DragHandler.cs" />
       <Compile Include="NetUI\Helpers\ResizeHandler.cs" />
       <Compile Include="NetUI\Helpers\UICommon.cs" />
+      <Compile Include="NetUI\SNchatWindow\ChatTabManager.cs" />
       <Compile Include="NetUI\SNchatWindow\SNchatWindow.cs" />
       <Compile Include="NetUI\SNchatWindow\SNchatWindowController.cs" />
       <Compile Include="NetUI\SNmenu\SNbtnController.cs" />

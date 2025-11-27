@@ -68,6 +68,11 @@ namespace ShorNet
             return instance;
         }
         
+        public static AssetBundle GetBundleForInternalUse()
+        {
+            return GetBundle();
+        }
+        
         public static void Unload(bool unloadAllLoadedObjects = false)
         {
             if (_bundle != null)

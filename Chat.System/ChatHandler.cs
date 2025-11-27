@@ -83,9 +83,9 @@ namespace ShorNet
                 case PackageData.ChatChannel.Trade:
                     return "[TRADE]";
 
-                case PackageData.ChatChannel.All:
+                case PackageData.ChatChannel.Global:
                 default:
-                    return "[ALL]";
+                    return "[GLOBAL]";
             }
         }
         
@@ -96,7 +96,7 @@ namespace ShorNet
                 case PackageData.ChatChannel.Trade:
                     return "#FFA500";
 
-                case PackageData.ChatChannel.All:
+                case PackageData.ChatChannel.Global:
                 default:
                     return "#8AAFFF";
             }
