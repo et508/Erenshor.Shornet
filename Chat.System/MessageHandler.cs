@@ -24,15 +24,23 @@ namespace ShorNet
                 if (__instance == null || __instance.typed == null)
                     return true;
 
-                // Allow one "vanilla" CheckInput (for NPC dialog clicks, etc.)
-                if (IgnoreNextCheckInput)
-                {
-                    IgnoreNextCheckInput = false;
-                    return true;
-                }
+                // Make sure the command registry is ready on the VERY FIRST input
+                CommandRegistry.EnsureInitialized();
 
                 string raw  = __instance.typed.text ?? string.Empty;
                 string text = raw.Trim();
+
+                // NPC dialog keyword click: allow ONE vanilla CheckInput,
+                // unless the player actually typed /shor.
+                if (IgnoreNextCheckInput)
+                {
+                    IgnoreNextCheckInput = false;
+
+                    if (!text.StartsWith("/shor", StringComparison.OrdinalIgnoreCase))
+                        return true; // let the game handle this one normally
+
+                    // If it *is* /shor, fall through into our handling below
+                }
 
                 // 1) ShorNet slash commands: /shor ...
                 if (text.StartsWith("/shor", StringComparison.OrdinalIgnoreCase))
@@ -84,8 +92,10 @@ namespace ShorNet
             if (__instance == null)
                 return;
 
+            // This is the behavior you had in your original version
+            // that correctly cleaned up the input UI.
             __instance.typed.text = string.Empty;
-            __instance.CloseInputBox(); // lets TypeText restore scroll & layout properly
+            __instance.CloseInputBox();
         }
 
         /// <summary>
@@ -111,7 +121,7 @@ namespace ShorNet
         {
             // full is like:
             // "/shor"
-            // "/shor all"
+            // "/shor global"
             // "/shor say hello world"
             // "/shor online"
             // "/shor connect"
@@ -140,6 +150,7 @@ namespace ShorNet
                 ? string.Empty
                 : remainder.Substring(spaceIndex + 1).Trim();
 
+            // Try executing the named command
             if (CommandRegistry.TryExecute(cmd, __instance, args))
                 return;
 

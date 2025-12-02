@@ -23,8 +23,20 @@ namespace ShorNet
         private static readonly Dictionary<string, string> _descriptions =
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        static CommandRegistry()
+        // NEW: explicit init guard
+        private static bool _initialized;
+
+        /// <summary>
+        /// Make sure commands are registered exactly once.
+        /// Call this before using the registry.
+        /// </summary>
+        internal static void EnsureInitialized()
         {
+            if (_initialized)
+                return;
+
+            _initialized = true;
+
             // Core chat routing
             RegisterCommand(
                 "global",
@@ -77,6 +89,9 @@ namespace ShorNet
                 "Show ShorNet command help."
             );
         }
+
+        // IMPORTANT: remove the old static constructor if you still have it.
+        // static CommandRegistry() { ... }  ← delete this if present
 
         internal static void RegisterCommand(string name, ShorCommandHandler handler, string description)
         {
