@@ -1,3 +1,5 @@
+using Erenshor.ShorNet.Protocol;
+
 namespace ShorNet
 {
     public static class ChatHandler

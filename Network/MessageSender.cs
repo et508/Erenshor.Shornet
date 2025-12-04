@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using LiteNetLib.Utils;
 using BepInEx.Bootstrap;
 using Steamworks;
+using Erenshor.ShorNet.Protocol;
 
 namespace ShorNet
 {

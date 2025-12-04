@@ -8,6 +8,7 @@ using BepInEx;
 using BepInEx.Bootstrap;
 using UnityEngine;
 using Steamworks;
+using Erenshor.ShorNet.Protocol;
 
 namespace ShorNet
 {
