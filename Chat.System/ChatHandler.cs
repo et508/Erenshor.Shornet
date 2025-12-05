@@ -13,7 +13,7 @@ namespace ShorNet
                 string colorHex     = GetChannelColorHex(data.Channel);
                 
                 string msg =
-                    $"<color={colorHex}>[{timestamp}] {channelLabel} [{data.SenderName}]: {data.Message}</color>";
+                    $"<color=#ADADAD>[{timestamp}]</color> <color={colorHex}>{channelLabel} [{data.SenderName}]: {data.Message}</color>";
 
                 PushToUIAndGame(msg);
             }
