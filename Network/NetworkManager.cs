@@ -61,11 +61,11 @@ namespace ShorNet
 
             if (_serverPeer.ConnectionState == ConnectionState.Connected)
             {
-                ChatHandler.PushToUIAndGame("<color=purple>[SHORNET]</color> <color=green>Successfully connected to the ShorNet server.</color>");
-                _logger.LogMessage("Successfully connected to the ShorNet server.");
+                _logger.LogMessage("Connection to ShorNet server established; waiting for validation response...");
             }
             else
             {
+                ChatHandler.PushToUIAndGame("<color=purple>[SHORNET]</color> <color=red>Unable to connect to the ShorNet server.</color>");
                 _logger.LogMessage("Connecting to the ShorNet server has failed.");
             }
         }

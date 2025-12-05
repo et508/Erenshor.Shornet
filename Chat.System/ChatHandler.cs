@@ -52,7 +52,7 @@ namespace ShorNet
 
                 case PackageData.InformationType.VersionMismatch:
                 {
-                    string msg = $"<color=purple>[SHORNET]</color> {data.Message}";
+                    string msg = $"<color=purple>[SHORNET]</color> <color=red>{data.Message}</color>";
                     PushToUIAndGame(msg);
                     break;
                 }
