@@ -19,6 +19,7 @@ namespace ShorNet
         private EventBasedNetListener _listener;
         private ManualLogSource _logger;
         private string _steamUsername;
+        private ConnectionConfig _connectionConfig;
 
         public bool IsConnected => _serverPeer != null && _serverPeer.ConnectionState == ConnectionState.Connected;
 
@@ -31,6 +32,8 @@ namespace ShorNet
         {
             _logger        = logger;
             _steamUsername = steamUsername;
+            
+            _connectionConfig = ConnectionConfigStore.Load();
 
             _listener   = new EventBasedNetListener();
             _netManager = new NetManager(_listener);
@@ -46,8 +49,8 @@ namespace ShorNet
         {
             _netManager.Start();
             _serverPeer = _netManager.Connect(
-                ConfigGenerator._serverIp.Value,
-                ConfigGenerator._serverPort.Value,
+                _connectionConfig.ServerIP,
+                _connectionConfig.ServerPort,
                 "ShorNetOnlineChat");
 
             int attempts = 0;

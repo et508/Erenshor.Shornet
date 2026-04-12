@@ -34,9 +34,12 @@
     </PropertyGroup>
     <ItemGroup>
       <Compile Include="Chat.System\CommandRegistry.cs" />
-      <Compile Include="ConfigGenerator.cs" />
       <Compile Include="Chat.System\ChatHandler.cs" />
       <Compile Include="Chat.System\MessageHandler.cs" />
+      <Compile Include="Configuration\ConfigGenerator.cs" />
+      <Compile Include="Configuration\ConnectionConfig.cs" />
+      <Compile Include="Configuration\ShorNetSetup.cs" />
+      <Compile Include="Configuration\WindowLayout.cs" />
       <Compile Include="LoadAssetBundle.cs" />
       <Compile Include="NetUI\Helpers\DebounceInvoker.cs" />
       <Compile Include="NetUI\Helpers\DragHandler.cs" />
@@ -51,9 +54,7 @@
       <Compile Include="Network\NetworkManager.cs" />
       <Compile Include="Plugin.cs" />
       <Compile Include="ShorNetController.cs" />
-      <Compile Include="ShorNetSetup.cs" />
       <Compile Include="Validation\SceneValidator.cs" />
-      <Compile Include="WindowLayout.cs" />
     </ItemGroup>
     <ItemGroup>
       <Reference Include="0Harmony">
