@@ -13,6 +13,8 @@
         <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
         <FileAlignment>512</FileAlignment>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+        <NoWarn>1701;1702;CS1705</NoWarn>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
         <PlatformTarget>AnyCPU</PlatformTarget>
