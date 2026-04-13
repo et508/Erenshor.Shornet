@@ -11,7 +11,7 @@ namespace ShorNet
                 string timestamp    = GetTimestamp();
                 string channelLabel = GetChannelLabel(data.Channel);
                 string colorHex     = GetChannelColorHex(data.Channel);
-                
+
                 string msg =
                     $"<color=#ADADAD>[{timestamp}]</color> <color={colorHex}>{channelLabel} [{data.SenderName}]: {data.Message}</color>";
 
@@ -72,12 +72,28 @@ namespace ShorNet
                 }
             }
         }
-        
+
+        /// <summary>
+        /// The ShorNet-exclusive log type flag.
+        /// Uses bit 30 (2^30 = 1073741824) to avoid collision with the game's defined
+        /// ChatLogLine.LogType values (highest is 2^22) and other mods grabbing nearby slots.
+        /// </summary>
+        public const int ShorNetLogTypeFlag = 1073741824; // 2^30
+
+        /// <summary>
+        /// Sends a ShorNet message to the game's social log using the ShorNet-exclusive
+        /// log type flag so it routes only to the ShorNet tab filter.
+        /// </summary>
+        public static void PushToUIAndGame(string msg)
+        {
+            UpdateSocialLog.LogAdd(new ChatLogLine(msg, (ChatLogLine.LogType)ShorNetLogTypeFlag, ""));
+        }
+
         private static string GetTimestamp()
         {
             return System.DateTime.Now.ToString("HH:mm");
         }
-        
+
         private static string GetChannelLabel(PackageData.ChatChannel channel)
         {
             switch (channel)
@@ -90,7 +106,7 @@ namespace ShorNet
                     return "[GLOBAL]";
             }
         }
-        
+
         private static string GetChannelColorHex(PackageData.ChatChannel channel)
         {
             switch (channel)
@@ -102,23 +118,6 @@ namespace ShorNet
                 default:
                     return "#8AAFFF";
             }
-        }
-
-        public static void PushToUIAndGame(string msg)
-        {
-            if (ConfigGenerator._enablePrintInChatWindow.Value)
-            {
-                SendChatLogMessage(msg);
-            }
-            else
-            {
-                SNchatWindowController.AddMessage(msg);
-            }
-        }
-        
-        public static void SendChatLogMessage(string message)
-        {
-            UpdateSocialLog.LogAdd(message);
         }
     }
 }

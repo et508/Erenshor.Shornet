@@ -1,12 +1,13 @@
 using System.Collections;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 namespace ShorNet
 {
+    /// <summary>
+    /// Bootstraps ShorNet under the game's GameManager object.
+    /// No custom UI is spawned here; all output goes through the game's native chat.
+    /// </summary>
     public class ShorNetController : MonoBehaviour
     {
         private static bool _initialized;
@@ -22,8 +23,8 @@ namespace ShorNet
 
             EnsureBootstrapExists();
 
-            SceneManager.sceneLoaded += OnSceneLoaded_Static;
-            SceneManager.activeSceneChanged += OnActiveSceneChanged_Static;
+            SceneManager.sceneLoaded          += OnSceneLoaded_Static;
+            SceneManager.activeSceneChanged   += OnActiveSceneChanged_Static;
         }
 
         private static void OnSceneLoaded_Static(Scene scene, LoadSceneMode mode)
@@ -51,9 +52,7 @@ namespace ShorNet
 
             var runner = go.GetComponent<Bootstrap>();
             if (runner == null)
-            {
                 runner = go.AddComponent<Bootstrap>();
-            }
 
             runner.KickWaitForGameManager();
         }
@@ -77,14 +76,8 @@ namespace ShorNet
             host.transform.SetParent(gameManager.transform, false);
 
             _instance = host.GetComponent<ShorNetController>();
-            if (_instance == null) _instance = host.AddComponent<ShorNetController>();
-
-            if (host.GetComponent<SNchatWindow>() == null)
-                host.AddComponent<SNchatWindow>();
-            
-            if (host.GetComponent<SNmenu>() == null)
-                host.AddComponent<SNmenu>();
-
+            if (_instance == null)
+                _instance = host.AddComponent<ShorNetController>();
         }
 
         private class Bootstrap : MonoBehaviour
@@ -127,11 +120,9 @@ namespace ShorNet
                 {
                     gm = GameObject.Find(TargetAnchorName);
                     if (gm == null)
-                    {
                         yield return null;
-                    }
                 }
-                
+
                 _waiting = false;
                 SpawnUnderGameManager(gm);
             }

@@ -88,10 +88,14 @@ namespace ShorNet
                 (ctx, args) => ShowHelp(),
                 "Show ShorNet command help."
             );
-        }
 
-        // IMPORTANT: remove the old static constructor if you still have it.
-        // static CommandRegistry() { ... }  ← delete this if present
+            // Settings UI
+            RegisterCommand(
+                "settings",
+                (ctx, args) => Plugin.OpenSettingsWindow(),
+                "Open the ShorNet settings window."
+            );
+        }
 
         internal static void RegisterCommand(string name, ShorCommandHandler handler, string description)
         {

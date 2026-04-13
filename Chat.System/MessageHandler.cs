@@ -5,16 +5,65 @@ namespace ShorNet
 {
     internal class MessageHandler
     {
-        /// <summary>
-        /// When true, the next TypeText.CheckInput call will be allowed
-        /// to run completely unpatched (vanilla behavior).
-        /// Used for NPC dialog keyword clicks, etc.
-        /// </summary>
-        internal static bool IgnoreNextCheckInput = false;
+        // =========================================================
+        // Patch: TypeText.CheckCommands  (handles /shor commands)
+        // Mirrors LootManager's LootCommands pattern exactly.
+        // =========================================================
+        [HarmonyPatch(typeof(TypeText), "CheckCommands")]
+        public static class TypeText_CheckCommands_Patch
+        {
+            [HarmonyPrefix]
+            public static bool Prefix()
+            {
+                string command = GameData.TextInput.typed.text;
+                if (string.IsNullOrWhiteSpace(command))
+                    return true;
 
-        // ==========================
-        // Patch: TypeText.CheckInput
-        // ==========================
+                if (!command.StartsWith("/shor", StringComparison.OrdinalIgnoreCase))
+                    return true;
+
+                // Make sure command registry is ready
+                CommandRegistry.EnsureInitialized();
+
+                string remainder = command.Length <= 5
+                    ? string.Empty
+                    : command.Substring(5).TrimStart();
+
+                if (string.IsNullOrEmpty(remainder))
+                {
+                    CommandRegistry.ShowHelp();
+                }
+                else
+                {
+                    int spaceIndex = remainder.IndexOf(' ');
+                    string cmd  = spaceIndex < 0 ? remainder : remainder.Substring(0, spaceIndex);
+                    string args = spaceIndex < 0 ? string.Empty : remainder.Substring(spaceIndex + 1).Trim();
+
+                    if (!CommandRegistry.TryExecute(cmd, GameData.TextInput, args))
+                    {
+                        ChatHandler.PushToUIAndGame(
+                            "<color=purple>[SHORNET]</color> " +
+                            "<color=yellow>Unknown subcommand. Try </color><color=white>/shor help</color>");
+                    }
+                }
+
+                ClearInput();
+                return false; // swallow from game
+            }
+
+            private static void ClearInput()
+            {
+                GameData.TextInput.typed.text = "";
+                GameData.TextInput.CDFrames   = 10f;
+                GameData.TextInput.InputBox.SetActive(false);
+                GameData.PlayerTyping         = false;
+            }
+        }
+
+        // =========================================================
+        // Patch: TypeText.CheckInput  (handles chat routing only)
+        // Intercepts normal (non-slash) text when global mode is on.
+        // =========================================================
         [HarmonyPatch(typeof(TypeText), "CheckInput")]
         public static class TypeText_CheckInput_Patch
         {
@@ -24,140 +73,49 @@ namespace ShorNet
                 if (__instance == null || __instance.typed == null)
                     return true;
 
-                // Make sure the command registry is ready on the VERY FIRST input
                 CommandRegistry.EnsureInitialized();
 
-                string raw  = __instance.typed.text ?? string.Empty;
-                string text = raw.Trim();
+                string text = (__instance.typed.text ?? string.Empty).Trim();
 
-                // NPC dialog keyword click: allow ONE vanilla CheckInput,
-                // unless the player actually typed /shor.
-                if (IgnoreNextCheckInput)
-                {
-                    IgnoreNextCheckInput = false;
-
-                    if (!text.StartsWith("/shor", StringComparison.OrdinalIgnoreCase))
-                        return true; // let the game handle this one normally
-
-                    // If it *is* /shor, fall through into our handling below
-                }
-
-                // 1) ShorNet slash commands: /shor ...
-                if (text.StartsWith("/shor", StringComparison.OrdinalIgnoreCase))
-                {
-                    HandleShorCommand(__instance, text);
-                    ResetPlayerUI(__instance);
-                    return false; // don't let the base game see /shor commands
-                }
-
-                // 2) Normal text AND ShorNet chat mode is active:
-                //    route this line into ShorNet instead of base game, as long
-                //    as it isn't a different slash command.
+                // Only intercept non-slash text when ShorNet mode is active.
+                // Slash commands are handled by the CheckCommands patch above.
                 if (CommandRegistry.Mode != CommandRegistry.ChatMode.Off &&
                     !string.IsNullOrWhiteSpace(text) &&
-                    text[0] != '/') // avoid intercepting game commands
+                    text[0] != '/')
                 {
-                    SendChatAccordingToMode(text);
-                    ResetPlayerUI(__instance);
+                    if (MessageHandler._suppressNextChatRoute)
+                    {
+                        MessageHandler._suppressNextChatRoute = false;
+                        return true;
+                    }
+
+                    MessageSender.SendChatMessage(text);
+                    __instance.typed.text = string.Empty;
+                    __instance.CloseInputBox();
                     return false;
                 }
 
-                // 3) Otherwise, let the game handle input as usual
+                MessageHandler._suppressNextChatRoute = false;
                 return true;
             }
         }
 
-        // =====================================
-        // Patch: IDLog.OnClick (NPC dialog link)
-        // =====================================
-        [HarmonyPatch(typeof(IDLog), "OnClick")]
-        public static class IDLog_OnClick_Patch
+        // =========================================================
+        // Patch: TypeText.ForceTextInput  (NPC dialog keyword clicks)
+        // ForceTextInput sets typed.text to a keyword then calls
+        // CheckInput immediately — we don't want that routed to ShorNet.
+        // =========================================================
+        [HarmonyPatch(typeof(TypeText), "ForceTextInput")]
+        public static class TypeText_ForceTextInput_Patch
         {
             [HarmonyPrefix]
             public static void Prefix()
             {
-                // The click handler will call GameData.TextInput.ForceTextInput(word),
-                // which internally calls TypeText.CheckInput().
-                // We want THAT call to behave like vanilla local chat, not ShorNet.
-                IgnoreNextCheckInput = true;
+                // Temporarily disable chat routing for this one CheckInput call.
+                _suppressNextChatRoute = true;
             }
         }
 
-        // ==========================
-        // Core helpers
-        // ==========================
-
-        private static void ResetPlayerUI(TypeText __instance)
-        {
-            if (__instance == null)
-                return;
-
-            // This is the behavior you had in your original version
-            // that correctly cleaned up the input UI.
-            __instance.typed.text = string.Empty;
-            __instance.CloseInputBox();
-        }
-
-        /// <summary>
-        /// Sends a chat line to ShorNet based on the current mode.
-        /// Right now the server treats everything as Global, but this
-        /// is future-proof for Trade/etc.
-        /// </summary>
-        private static void SendChatAccordingToMode(string message)
-        {
-            if (string.IsNullOrWhiteSpace(message))
-                return;
-
-            // TODO: When channel support is wired client-side,
-            // pass the channel into MessageSender based on CommandRegistry.Mode.
-            MessageSender.SendChatMessage(message);
-        }
-
-        // ==========================
-        // /shor command parsing
-        // ==========================
-
-        private static void HandleShorCommand(TypeText __instance, string full)
-        {
-            // full is like:
-            // "/shor"
-            // "/shor global"
-            // "/shor say hello world"
-            // "/shor online"
-            // "/shor connect"
-
-            string trimmed = full.Trim();
-
-            // Strip leading "/shor"
-            string remainder = trimmed.Length <= 5
-                ? string.Empty
-                : trimmed.Substring(5).TrimStart(); // remove "/shor" + any space
-
-            // No subcommand → show help
-            if (string.IsNullOrEmpty(remainder))
-            {
-                CommandRegistry.ShowHelp();
-                return;
-            }
-
-            // Split into first token + rest
-            int spaceIndex = remainder.IndexOf(' ');
-            string cmd = (spaceIndex < 0)
-                ? remainder
-                : remainder.Substring(0, spaceIndex);
-
-            string args = (spaceIndex < 0)
-                ? string.Empty
-                : remainder.Substring(spaceIndex + 1).Trim();
-
-            // Try executing the named command
-            if (CommandRegistry.TryExecute(cmd, __instance, args))
-                return;
-
-            // Unknown command
-            ChatHandler.PushToUIAndGame(
-                "<color=purple>[SHORNET]</color> " +
-                "<color=yellow>Unknown subcommand. Try </color><color=white>/shor help</color>");
-        }
+        internal static bool _suppressNextChatRoute = false;
     }
 }

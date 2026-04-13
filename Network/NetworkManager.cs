@@ -4,7 +4,6 @@ using LiteNetLib;
 using LiteNetLib.Utils;
 using BepInEx.Logging;
 using Newtonsoft.Json;
-using BepInEx;
 using BepInEx.Bootstrap;
 using UnityEngine;
 using Steamworks;
@@ -28,11 +27,11 @@ namespace ShorNet
             return _serverPeer;
         }
 
-        public void Init(ManualLogSource logger, string steamUsername, PluginInfo pluginInfo)
+        public void Init(ManualLogSource logger, string steamUsername)
         {
             _logger        = logger;
             _steamUsername = steamUsername;
-            
+
             _connectionConfig = ConnectionConfigStore.Load();
 
             _listener   = new EventBasedNetListener();
@@ -47,30 +46,15 @@ namespace ShorNet
 
         public void ConnectToGlobalServer()
         {
-            _netManager.Start();
+            if (!_netManager.IsRunning)
+                _netManager.Start();
+
             _serverPeer = _netManager.Connect(
                 _connectionConfig.ServerIP,
                 _connectionConfig.ServerPort,
                 "ShorNetOnlineChat");
 
-            int attempts = 0;
-            while (_serverPeer.ConnectionState != ConnectionState.Connected && attempts < 5)
-            {
-                _logger.LogMessage("Connecting to the ShorNet server...");
-                attempts++;
-                System.Threading.Thread.Sleep(1000);
-                _netManager.PollEvents();
-            }
-
-            if (_serverPeer.ConnectionState == ConnectionState.Connected)
-            {
-                _logger.LogMessage("Connection to ShorNet server established; waiting for validation response...");
-            }
-            else
-            {
-                ChatHandler.PushToUIAndGame("<color=purple>[SHORNET]</color> <color=red>Unable to connect to the ShorNet server.</color>");
-                _logger.LogMessage("Connecting to the ShorNet server has failed.");
-            }
+            _logger.LogMessage($"[ShorNet] Connecting to {_connectionConfig.ServerIP}:{_connectionConfig.ServerPort}...");
         }
 
         public void Update()
@@ -86,10 +70,6 @@ namespace ShorNet
             }
         }
 
-        /// <summary>
-        /// Server currently sends pure UTF-8 JSON bytes (no header).
-        /// We read the whole payload and deserialize into PackageData.
-        /// </summary>
         public void OnNetworkReceive(NetPeer peer, NetPacketReader reader, DeliveryMethod deliveryMethod)
         {
             try
@@ -101,7 +81,6 @@ namespace ShorNet
                     return;
                 }
 
-                // Read ALL remaining bytes as the JSON payload (no subsystem/opcode header yet)
                 byte[] payloadBytes = reader.GetRemainingBytes();
 
                 string message;
@@ -130,7 +109,6 @@ namespace ShorNet
             }
             finally
             {
-                // Always recycle the reader back to LiteNetLib pool
                 reader.Recycle();
             }
         }

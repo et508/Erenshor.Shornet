@@ -1,15 +1,18 @@
 ## [0.1.1-Beta]
 ## Chat System Improvements and Bug Fixes
+
+### Added
+- Support for the games built-in chat window and tabs for ShorNet messages.
+  - Options to route ShorNet messages are in the /shor settings menu.
+  
 ### Updated
 - Reworked the ShorNet chat command system to use `/shor`-style commands instead of `@` prefixes.
 - Added new unified `/shor` command namespace with support for:
   - `/shor global`, `/shor trade`, `/shor off` for channel routing
   - `/shor say <message>` for one-off sending
-  - `/shor online` and `/shor connect`
+  - `/shor online`, `/shor connect`, `/shor settings`
 
 ### Fixed
-- Resolved an issue where using ShorNet chat commands caused the **in-game chat window** to clip, mis-scroll, or display text outside its bounds. 
-  - Corrected the command handler to properly close the game's input box, restoring normal layout and scrolling behavior.
 - NPC dialog keyword clicks (quest responses) now correctly bypass ShorNet and go to the game’s local chat.
 
 ---
