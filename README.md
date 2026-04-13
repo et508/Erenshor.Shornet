@@ -13,11 +13,12 @@
 ## Features
 
 >### Global Chat
->Live communication between all connected ShorNet players. 
->With its own chatbox, ShorNet chat runs independently from Erenshor's SimPlayer chat.
->- Prefix messages with @ (e.g. @Hello everyone!)
->- Use @@ to toggle chat mode and type freely
->- See online players with /@online
+>Live communication between all connected ShorNet players.
+>- Use `/shor settings` to configure chat routing and other options.
+>- See online players with `/shor online`.
+>- Route messages to the built-in chat with `/shor global`, toggle off with `/shor off`.
+>- Send one-off messages with `/shor say <message>`.
+>- `/shor` to see all available commands.
 
 ## Installation
 >- Install [BepInEx](https://github.com/et508/Erenshor.BepInEx/releases/tag/e1)
