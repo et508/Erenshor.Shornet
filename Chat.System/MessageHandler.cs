@@ -55,8 +55,7 @@ namespace ShorNet
             {
                 GameData.TextInput.typed.text = "";
                 GameData.TextInput.CDFrames   = 10f;
-                GameData.TextInput.InputBox.SetActive(false);
-                GameData.PlayerTyping         = false;
+                GameData.TextInput.CloseInputBox();
             }
         }
 
